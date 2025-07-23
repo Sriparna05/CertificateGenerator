@@ -1,3 +1,22 @@
+from PIL import Image, ImageDraw, ImageFont
+# Image template processing
+def generate_certificate_from_image(template_path, output_path, text_items, font_path=None, font_size=40, fill=(0,0,0)):
+    """
+    Overlay text on an image template at specified coordinates.
+    Args:
+        template_path (str): Path to the image template (PNG/JPEG).
+        output_path (str): Path to save the generated image.
+        text_items (list): List of dicts: [{"text": str, "xy": (x, y)}]
+        font_path (str): Path to a .ttf font file (optional).
+        font_size (int): Font size.
+        fill (tuple): Text color (R, G, B).
+    """
+    image = Image.open(template_path).convert("RGBA")
+    draw = ImageDraw.Draw(image)
+    font = ImageFont.truetype(font_path, font_size) if font_path else ImageFont.load_default()
+    for item in text_items:
+        draw.text(item["xy"], item["text"], font=font, fill=fill)
+    image.save(output_path)
 from jinja2 import Environment, FileSystemLoader
 # HTML template rendering
 def generate_certificate_from_html(template_dir, template_name, output_path, context):
