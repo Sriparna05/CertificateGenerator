@@ -27,9 +27,45 @@ def health_check():
 
 # Example endpoint using Marshmallow validation
 
+
 @app.route("/api/v1/certificates/generate", methods=["POST"])
 @auth.login_required
 def generate_certificate():
+    """
+    Generate one or more certificates.
+    ---
+    tags:
+      - Certificates
+    security:
+      - basicAuth: []
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          id: CertificateRequest
+          required:
+            - template_id
+            - output_format
+            - recipients
+          properties:
+            template_id:
+              type: string
+            output_format:
+              type: string
+              enum: [pdf, png, jpeg]
+            recipients:
+              type: array
+              items:
+                type: object
+            ai_options:
+              type: object
+    responses:
+      200:
+        description: Success
+      400:
+        description: Validation error
+    """
     schema = CertificateRequestSchema()
     data = request.get_json()
     errors = schema.validate(data)
