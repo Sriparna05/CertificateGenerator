@@ -1,0 +1,85 @@
+openapi: 3.0.0
+info:
+  title: Certificate Generator API
+  version: 1.0.0
+  description: |
+    REST API for generating certificates from PPTX, HTML, or image templates, with AI personalization and async support.
+servers:
+  - url: http://localhost:5000
+paths:
+  /api/v1/certificates/generate:
+    post:
+      summary: Generate one or more certificates
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CertificateRequest'
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Validation error
+  /api/v1/certificates/generate_async:
+    post:
+      summary: Generate certificate asynchronously
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '202':
+          description: Job accepted
+  /api/v1/jobs/{job_id}:
+    get:
+      summary: Get status of async job
+      parameters:
+        - in: path
+          name: job_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Job status
+  /api/v1/templates:
+    get:
+      summary: List available certificate templates
+      responses:
+        '200':
+          description: List of templates
+  /api/v1/health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: OK
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+  schemas:
+    CertificateRequest:
+      type: object
+      required:
+        - template_id
+        - output_format
+        - recipients
+      properties:
+        template_id:
+          type: string
+        output_format:
+          type: string
+          enum: [pdf, png, jpeg]
+        recipients:
+          type: array
+          items:
+            type: object
+        ai_options:
+          type: object
