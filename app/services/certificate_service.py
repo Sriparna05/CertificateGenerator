@@ -1,3 +1,19 @@
+import shutil
+# Store generated files in local directory
+def store_generated_file(src_path, filename, storage_dir="generated_certificates"):
+    """
+    Move or copy a generated file to the storage directory.
+    Args:
+        src_path (str): Path to the generated file.
+        filename (str): Name for the stored file.
+        storage_dir (str): Directory to store the file.
+    Returns:
+        str: Path to the stored file.
+    """
+    os.makedirs(storage_dir, exist_ok=True)
+    dest_path = os.path.join(storage_dir, filename)
+    shutil.copy2(src_path, dest_path)
+    return dest_path
 from weasyprint import HTML
 # Output HTML to PDF using WeasyPrint
 def html_to_pdf(html_path, pdf_output_path):
