@@ -49,9 +49,10 @@ def store_generated_file(src_path, filename, storage_dir="generated_certificates
     dest_path = os.path.join(storage_dir, filename)
     shutil.copy2(src_path, dest_path)
     return dest_path
-from weasyprint import HTML
 # Output HTML to PDF using WeasyPrint
 def html_to_pdf(html_path, pdf_output_path):
+    # Import here to allow mocking in tests and avoid import errors if WeasyPrint is not installed
+    from weasyprint import HTML
     """
     Convert a rendered HTML file to PDF using WeasyPrint.
     Args:
