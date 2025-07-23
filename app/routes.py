@@ -4,7 +4,55 @@ from app import app
 from flask import jsonify, request
 
 from app.models import CertificateRequestSchema
-from app.services.certificate_service import list_templates
+from app.services.certificate_service import list_templates, generate_certificate_async
+from celery.result import AsyncResult
+from app.celery_worker import celery_app
+# Async certificate generation endpoint
+@app.route("/api/v1/certificates/generate_async", methods=["POST"])
+def generate_certificate_async_api():
+    """
+    Trigger async certificate generation (Celery).
+    ---
+    tags:
+      - Certificates
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+    responses:
+      202:
+        description: Job accepted
+    """
+    data = request.get_json()
+    task = generate_certificate_async.delay(data)
+    return jsonify({"status": "accepted", "job_id": task.id}), 202
+
+# Job status endpoint
+@app.route("/api/v1/jobs/<job_id>", methods=["GET"])
+def get_job_status(job_id):
+    """
+    Get status of an async certificate generation job.
+    ---
+    tags:
+      - Jobs
+    parameters:
+      - in: path
+        name: job_id
+        required: true
+        type: string
+    responses:
+      200:
+        description: Job status
+    """
+    result = AsyncResult(job_id, app=celery_app)
+    response = {
+        "job_id": job_id,
+        "state": result.state,
+        "result": result.result if result.ready() else None
+    }
+    return jsonify(response), 200
 # List available templates endpoint
 @app.route("/api/v1/templates", methods=["GET"])
 def get_templates():

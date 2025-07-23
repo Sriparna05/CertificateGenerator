@@ -1,3 +1,16 @@
+from app.celery_worker import celery_app
+# Async certificate generation task (stub)
+@celery_app.task
+def generate_certificate_async(data):
+    """
+    Celery task to generate certificates asynchronously (stub).
+    Args:
+        data (dict): Certificate generation request data.
+    Returns:
+        dict: Result (stubbed).
+    """
+    # TODO: Call actual generation logic here
+    return {"status": "success", "message": "Certificate generated (async stub)"}
 # List available templates
 def list_templates(base_dir="certificate_templates"):
     """
