@@ -11,3 +11,4 @@ celery
 redis
 pytest
 pytest-flask
+gunicorn

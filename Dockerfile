@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
+
 # Copy requirements and install Python dependencies
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
@@ -33,5 +34,5 @@ EXPOSE 5000
 ENV FLASK_APP=app
 ENV FLASK_RUN_HOST=0.0.0.0
 
-# Start the Flask app
-CMD ["flask", "run"]
+# Start the app with Gunicorn (production WSGI server)
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
