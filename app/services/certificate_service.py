@@ -30,17 +30,21 @@ def list_templates(base_dir="certificate_templates"):
         templates["html"] = [f for f in os.listdir(html_dir) if f.endswith(".html")]
     return templates
 import shutil
-# Store generated files in local directory
-def store_generated_file(src_path, filename, storage_dir="generated_certificates"):
+# Store generated files in local directory or (stub) cloud
+def store_generated_file(src_path, filename, storage_dir="generated_certificates", use_cloud=False):
     """
-    Move or copy a generated file to the storage directory.
+    Move or copy a generated file to the storage directory or upload to cloud (stub).
     Args:
         src_path (str): Path to the generated file.
         filename (str): Name for the stored file.
         storage_dir (str): Directory to store the file.
+        use_cloud (bool): If True, upload to cloud (stub).
     Returns:
-        str: Path to the stored file.
+        str: Path or URL to the stored file.
     """
+    if use_cloud:
+        # TODO: Integrate with cloud storage (S3, GCS, etc.)
+        return f"https://cloud-storage.example.com/{filename}"
     os.makedirs(storage_dir, exist_ok=True)
     dest_path = os.path.join(storage_dir, filename)
     shutil.copy2(src_path, dest_path)
