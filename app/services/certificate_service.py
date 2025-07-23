@@ -1,3 +1,21 @@
+# List available templates
+def list_templates(base_dir="certificate_templates"):
+    """
+    List available certificate templates by type (pptx, images, html).
+    Returns:
+        dict: {"pptx": [filenames], "images": [filenames], "html": [filenames]}
+    """
+    templates = {"pptx": [], "images": [], "html": []}
+    pptx_dir = os.path.join(base_dir, "pptx")
+    images_dir = os.path.join(base_dir, "images")
+    html_dir = os.path.join(base_dir, "html")
+    if os.path.isdir(pptx_dir):
+        templates["pptx"] = [f for f in os.listdir(pptx_dir) if f.endswith(".pptx")]
+    if os.path.isdir(images_dir):
+        templates["images"] = [f for f in os.listdir(images_dir) if f.lower().endswith((".png", ".jpg", ".jpeg"))]
+    if os.path.isdir(html_dir):
+        templates["html"] = [f for f in os.listdir(html_dir) if f.endswith(".html")]
+    return templates
 import shutil
 # Store generated files in local directory
 def store_generated_file(src_path, filename, storage_dir="generated_certificates"):

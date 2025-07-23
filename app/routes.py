@@ -4,6 +4,21 @@ from app import app
 from flask import jsonify, request
 
 from app.models import CertificateRequestSchema
+from app.services.certificate_service import list_templates
+# List available templates endpoint
+@app.route("/api/v1/templates", methods=["GET"])
+def get_templates():
+    """
+    List available certificate templates.
+    ---
+    tags:
+      - Templates
+    responses:
+      200:
+        description: List of templates
+    """
+    templates = list_templates()
+    return jsonify({"templates": templates}), 200
 from flask_httpauth import HTTPBasicAuth
 
 auth = HTTPBasicAuth()
