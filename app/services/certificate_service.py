@@ -1,3 +1,28 @@
+from weasyprint import HTML
+# Output HTML to PDF using WeasyPrint
+def html_to_pdf(html_path, pdf_output_path):
+    """
+    Convert a rendered HTML file to PDF using WeasyPrint.
+    Args:
+        html_path (str): Path to the HTML file.
+        pdf_output_path (str): Path to save the PDF.
+    """
+    HTML(html_path).write_pdf(pdf_output_path)
+
+# Output image to PDF/PNG/JPEG using Pillow
+def image_to_format(image_path, output_path, fmt="PDF"):
+    """
+    Convert an image to PDF, PNG, or JPEG.
+    Args:
+        image_path (str): Path to the image file.
+        output_path (str): Path to save the output file.
+        fmt (str): Output format ("PDF", "PNG", "JPEG").
+    """
+    image = Image.open(image_path)
+    if fmt.upper() == "PDF":
+        image.convert("RGB").save(output_path, "PDF")
+    else:
+        image.save(output_path, fmt.upper())
 from PIL import Image, ImageDraw, ImageFont
 # Image template processing
 def generate_certificate_from_image(template_path, output_path, text_items, font_path=None, font_size=40, fill=(0,0,0)):
