@@ -3,6 +3,7 @@
 A modular, async-ready certificate generation service supporting PPTX, HTML, and image templates, with AI personalization and REST API.
 
 ## Features
+
 - RESTful API (Flask)
 - PPTX, HTML, and image template support
 - Output to PDF, PNG, JPEG
@@ -15,6 +16,7 @@ A modular, async-ready certificate generation service supporting PPTX, HTML, and
 ## Quick Start
 
 ### 1. Local Development
+
 ```sh
 python -m venv env
 source env/bin/activate  # or .\env\Scripts\activate on Windows
@@ -25,11 +27,13 @@ flask run
 ```
 
 ### 2. Docker Compose
+
 ```sh
 docker-compose up --build
 ```
 
 ## API Endpoints
+
 See `/apidocs` (Swagger UI) when running the app.
 
 - `POST /api/v1/certificates/generate` - Generate certificate (sync)
@@ -39,6 +43,7 @@ See `/apidocs` (Swagger UI) when running the app.
 - `GET /api/v1/health` - Health check
 
 ## Project Structure
+
 ```
 app/
   __init__.py
@@ -55,13 +60,16 @@ plan/
 ```
 
 ## Testing
+
 ```sh
 pytest
 ```
 
 ## Deployment
+
 - See `Dockerfile` and `docker-compose.yml`
 - Use `deploy.sh` or `deploy.bat`
 
 ## License
+
 MIT

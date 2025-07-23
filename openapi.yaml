@@ -17,11 +17,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CertificateRequest'
+              $ref: "#/components/schemas/CertificateRequest"
       responses:
-        '200':
+        "200":
           description: Success
-        '400':
+        "400":
           description: Validation error
   /api/v1/certificates/generate_async:
     post:
@@ -33,7 +33,7 @@ paths:
             schema:
               type: object
       responses:
-        '202':
+        "202":
           description: Job accepted
   /api/v1/jobs/{job_id}:
     get:
@@ -45,19 +45,19 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Job status
   /api/v1/templates:
     get:
       summary: List available certificate templates
       responses:
-        '200':
+        "200":
           description: List of templates
   /api/v1/health:
     get:
       summary: Health check
       responses:
-        '200':
+        "200":
           description: OK
 components:
   securitySchemes:
