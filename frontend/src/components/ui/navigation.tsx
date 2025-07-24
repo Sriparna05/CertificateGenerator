@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Home, Upload, Palette, Zap } from "lucide-react";
 

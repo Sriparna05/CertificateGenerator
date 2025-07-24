@@ -1,5 +1,5 @@
 // import { useRef } from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Button,
   Card,
@@ -12,6 +12,7 @@ import {
 } from "./ui";
 import { Upload, FileText, Plus, X } from "lucide-react";
 import { TechBackground } from "./tech-background";
+import { useCertificate } from "../contexts/CertificateContext";
 
 interface UploadSectionProps {
   onNext: () => void;
@@ -25,15 +26,22 @@ interface CertificateData {
 }
 
 export const UploadSection = ({ onNext }: UploadSectionProps) => {
-  const [csvData, setCsvData] = useState<File | null>(null);
+  const { file, onUpload } = useCertificate();
+  const [csvData, setCsvData] = useState<File | null>(file);
   const [manualData, setManualData] = useState<CertificateData[]>([
     { name: "", course: "", date: "", instructor: "" },
   ]);
+
+  // Sync csvData with context file
+  useEffect(() => {
+    setCsvData(file);
+  }, [file]);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setCsvData(file);
+      onUpload(file); // Update context
     }
   };
 
@@ -58,6 +66,36 @@ export const UploadSection = ({ onNext }: UploadSectionProps) => {
     );
     setManualData(updated);
   };
+
+  const createCSVFromManualData = () => {
+    const headers = ["name", "course", "date", "instructor"];
+    const csvContent = [
+      headers.join(","),
+      ...manualData
+        .filter((entry) => entry.name.trim() !== "")
+        .map((entry) =>
+          [entry.name, entry.course, entry.date, entry.instructor]
+            .map((field) => `"${field || ""}"`)
+            .join(",")
+        ),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    return new File([blob], "manual-data.csv", { type: "text/csv" });
+  };
+
+  const handleContinue = () => {
+    if (csvData) {
+      onUpload(csvData);
+    } else if (manualData.some((entry) => entry.name.trim() !== "")) {
+      const generatedCSV = createCSVFromManualData();
+      onUpload(generatedCSV);
+    }
+    onNext();
+  };
+
+  const hasValidData =
+    csvData || manualData.some((entry) => entry.name.trim() !== "");
 
   return (
     <div className="min-h-screen relative py-16 px-4">
@@ -108,7 +146,10 @@ export const UploadSection = ({ onNext }: UploadSectionProps) => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => setCsvData(null)}
+                      onClick={() => {
+                        setCsvData(null);
+                        onUpload(null); // Clear context
+                      }}
                     >
                       <X className="w-4 h-4" />
                     </Button>
@@ -207,8 +248,8 @@ export const UploadSection = ({ onNext }: UploadSectionProps) => {
           <div className="flex justify-end mt-8">
             <Button
               variant="hero"
-              onClick={onNext}
-              disabled={!csvData && manualData.every((entry) => !entry.name)}
+              onClick={handleContinue}
+              disabled={!hasValidData}
               className="px-8"
             >
               Continue to Templates

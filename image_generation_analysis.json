@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-07-25T01:24:24.114147",
+  "total_files": 299,
+  "file_counts": {
+    "pdf": 71,
+    "png": 56,
+    "jpeg": 20,
+    "html": 151,
+    "csv": 1,
+    "other": 0
+  },
+  "image_analysis": {
+    "total_images": 76,
+    "valid_images": 10,
+    "invalid_images": 0
+  },
+  "status": "working"
+}

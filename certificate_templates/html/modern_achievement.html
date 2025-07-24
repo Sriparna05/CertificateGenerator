@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Certificate of Achievement</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .certificate {
+        width: 800px;
+        height: 600px;
+        background: white;
+        position: relative;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        overflow: hidden;
+        page-break-inside: avoid;
+      }
+
+      .certificate::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          45deg,
+          transparent 0%,
+          rgba(102, 126, 234, 0.05) 50%,
+          transparent 100%
+        );
+        pointer-events: none;
+      }
+
+      .border-decoration {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        right: 20px;
+        bottom: 20px;
+        border: 3px solid #667eea;
+        border-radius: 8px;
+      }
+
+      .border-decoration::before {
+        content: "";
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        border: 1px solid #667eea;
+        border-radius: 4px;
+      }
+
+      .header {
+        text-align: center;
+        padding: 60px 40px 20px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .certificate-title {
+        font-family: "Playfair Display", serif;
+        font-size: 48px;
+        font-weight: 900;
+        color: #2d3748;
+        margin-bottom: 8px;
+        letter-spacing: 2px;
+      }
+
+      .certificate-subtitle {
+        font-size: 20px;
+        color: #667eea;
+        font-weight: 600;
+        letter-spacing: 1px;
+        margin-bottom: 40px;
+      }
+
+      .content {
+        text-align: center;
+        padding: 0 60px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .achievement-text {
+        font-size: 18px;
+        color: #4a5568;
+        margin-bottom: 20px;
+        line-height: 1.6;
+      }
+
+      .recipient-name {
+        font-family: "Playfair Display", serif;
+        font-size: 36px;
+        font-weight: 700;
+        color: #2d3748;
+        margin: 20px 0;
+        text-decoration: underline;
+        text-decoration-color: #667eea;
+        text-underline-offset: 8px;
+        text-decoration-thickness: 2px;
+      }
+
+      .course-name {
+        font-size: 24px;
+        color: #667eea;
+        font-weight: 600;
+        margin: 30px 0;
+        font-style: italic;
+      }
+
+      .footer {
+        position: absolute;
+        bottom: 40px;
+        left: 60px;
+        right: 60px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .signature-section {
+        text-align: center;
+      }
+
+      .signature-line {
+        width: 200px;
+        height: 2px;
+        background: #667eea;
+        margin-bottom: 8px;
+      }
+
+      .signature-label {
+        font-size: 14px;
+        color: #4a5568;
+        font-weight: 500;
+      }
+
+      .date-section {
+        text-align: center;
+      }
+
+      .organization {
+        position: absolute;
+        top: 20px;
+        right: 60px;
+        font-size: 14px;
+        color: #667eea;
+        font-weight: 600;
+      }
+
+      .decorative-element {
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        border-radius: 50%;
+        top: 40px;
+        left: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+      }
+
+      @media print {
+        body {
+          background: white;
+          padding: 0;
+          margin: 0;
+        }
+
+        .certificate {
+          width: 100%;
+          height: 100vh;
+          box-shadow: none;
+          border-radius: 0;
+          page-break-inside: avoid;
+          page-break-after: avoid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="certificate">
+      <div class="border-decoration"></div>
+      <div class="decorative-element">★</div>
+      <div class="organization">{{ organization or "Excellence Academy" }}</div>
+
+      <div class="header">
+        <h1 class="certificate-title">CERTIFICATE</h1>
+        <p class="certificate-subtitle">OF ACHIEVEMENT</p>
+      </div>
+
+      <div class="content">
+        <p class="achievement-text">This is to certify that</p>
+
+        <h2 class="recipient-name">{{ name }}</h2>
+
+        <p class="achievement-text">has successfully completed the course</p>
+
+        <h3 class="course-name">
+          "{{ course or "Professional Development Program" }}"
+        </h3>
+
+        <p class="achievement-text">
+          and has demonstrated excellence in learning and commitment to
+          professional growth.
+        </p>
+      </div>
+
+      <div class="footer">
+        <div class="signature-section">
+          <div class="signature-line"></div>
+          <p class="signature-label">{{ instructor or "Course Instructor" }}</p>
+        </div>
+
+        <div class="date-section">
+          <div class="signature-line"></div>
+          <p class="signature-label">{{ date or "Date of Completion" }}</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
