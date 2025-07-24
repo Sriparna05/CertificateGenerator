@@ -3,10 +3,13 @@ import { Navigation } from "@/components/ui/navigation";
 import { HeroSection, UploadSection, TemplateSection, GenerateSection } from "@/components";
 import { PageTransition } from "@/components/ui";
 
+import { useGenerate } from "@/hooks/use-generate";
+
 const Index = () => {
   const [currentStep, setCurrentStep] = useState("home");
-
-  // Remove unused handleStepChange, adapt to new component props
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("classic");
+  const { loading, result, error, generate } = useGenerate();
 
   const renderCurrentStep = () => {
     switch (currentStep) {
@@ -32,13 +35,11 @@ const Index = () => {
       case "generate":
         return (
           <GenerateSection
-            onGenerate={() => {
-              setLoading(true);
-              // Simulate generation and reset after
-              setTimeout(() => {
-                setLoading(false);
+            onGenerate={async () => {
+              if (uploadedFile && selectedTemplate) {
+                await generate(uploadedFile, selectedTemplate);
                 setCurrentStep("home");
-              }, 1500);
+              }
             }}
             loading={loading}
           />
@@ -48,15 +49,11 @@ const Index = () => {
     }
   };
 
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState<string>("classic");
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation is now a simple nav bar, not step-based. If step navigation is needed, implement custom logic. */}
       {/* <Navigation currentStep={currentStep} onStepChange={handleStepChange} /> */}
-        <PageTransition>
+      <PageTransition>
         {renderCurrentStep()}
       </PageTransition>
     </div>
