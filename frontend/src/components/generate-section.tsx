@@ -1,18 +1,174 @@
-import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
+import { Button, Card, Progress } from "./ui";
+import { Download, Mail, CheckCircle, FileText } from "lucide-react";
+import { TechBackground } from "./ui";
 
-export function GenerateSection({ onGenerate, loading }: { onGenerate: () => void; loading: boolean }) {
-  return (
-    <section className="w-full flex flex-col items-center gap-4 py-8">
-      <button
-        className={cn(
-          "px-8 py-3 rounded bg-green-600 text-white font-bold text-lg transition",
-          loading ? "opacity-60 cursor-not-allowed" : "hover:bg-green-700"
-        )}
-        onClick={onGenerate}
-        disabled={loading}
-      >
-        {loading ? "Generating..." : "Generate Certificates"}
-      </button>
-    </section>
-  );
+interface GenerateSectionProps {
+  onBack: () => void;
 }
+
+export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
+  const [progress, setProgress] = useState(0);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
+
+  useEffect(() => {
+    if (isGenerating) {
+      const interval = setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 100) {
+            setIsComplete(true);
+            setIsGenerating(false);
+            clearInterval(interval);
+            return 100;
+          }
+          return prev + 10;
+        });
+      }, 200);
+      return () => clearInterval(interval);
+    }
+  }, [isGenerating]);
+
+  const startGeneration = () => {
+    setIsGenerating(true);
+    setProgress(0);
+    setIsComplete(false);
+  };
+
+  const generatedCertificates = [
+    { name: "John Doe", course: "React Development", status: "completed" },
+    { name: "Jane Smith", course: "Node.js Fundamentals", status: "completed" },
+    { name: "Mike Johnson", course: "Full Stack Development", status: "completed" },
+  ];
+
+  return (
+    <div className="min-h-screen relative py-16 px-4">
+      <TechBackground />
+      <div className="max-w-4xl mx-auto relative z-10">
+        <div className="text-center mb-12 animate-fade-in">
+          <h1 className="text-4xl font-bold mb-4">Generate Certificates</h1>
+          <p className="text-xl text-muted-foreground">
+            Ready to create your professional certificates
+          </p>
+        </div>
+        {!isGenerating && !isComplete && (
+          <Card className="p-8 bg-gradient-card shadow-elegant border-0 text-center animate-slide-up">
+            <div className="space-y-6">
+              <div className="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center mx-auto">
+                <FileText className="w-10 h-10 text-primary-foreground" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold mb-2">Ready to Generate</h3>
+                <p className="text-muted-foreground">
+                  We'll create 3 certificates using the Modern Tech template
+                </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div className="bg-background/50 rounded-lg p-4">
+                  <div className="font-medium mb-1">Recipients</div>
+                  <div className="text-muted-foreground">3 people</div>
+                </div>
+                <div className="bg-background/50 rounded-lg p-4">
+                  <div className="font-medium mb-1">Template</div>
+                  <div className="text-muted-foreground">Modern Tech</div>
+                </div>
+                <div className="bg-background/50 rounded-lg p-4">
+                  <div className="font-medium mb-1">Format</div>
+                  <div className="text-muted-foreground">PDF</div>
+                </div>
+              </div>
+              <Button
+                variant="hero"
+                size="lg"
+                onClick={startGeneration}
+                className="w-full"
+              >
+                Start Generation
+              </Button>
+            </div>
+          </Card>
+        )}
+        {isGenerating && (
+          <Card className="p-8 bg-gradient-card shadow-elegant border-0 animate-slide-up">
+            <div className="text-center space-y-6">
+              <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto">
+                <FileText className="w-8 h-8 text-primary-foreground" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold mb-2">Generating Certificates</h3>
+                <p className="text-muted-foreground">
+                  Please wait while we create your certificates...
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Progress value={progress} className="w-full" />
+                <div className="text-sm text-muted-foreground">
+                  {progress}% complete
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
+        {isComplete && (
+          <div className="space-y-6 animate-fade-in">
+            <Card className="p-8 bg-gradient-card shadow-elegant border-0 text-center">
+              <div className="space-y-6">
+                <div className="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center mx-auto">
+                  <CheckCircle className="w-10 h-10 text-primary-foreground" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold mb-2">Certificates Generated!</h3>
+                  <p className="text-muted-foreground">
+                    All certificates have been successfully created and are ready for download
+                  </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button variant="hero" className="flex items-center gap-2">
+                    <Download className="w-4 h-4" />
+                    Download All (ZIP)
+                  </Button>
+                  <Button variant="outline" className="flex items-center gap-2">
+                    <Mail className="w-4 h-4" />
+                    Email to Recipients
+                  </Button>
+                </div>
+              </div>
+            </Card>
+            <Card className="p-6 bg-gradient-card shadow-elegant border-0">
+              <h4 className="font-semibold mb-4">Generated Certificates</h4>
+              <div className="space-y-3">
+                {generatedCertificates.map((cert, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-3 bg-background/50 rounded-lg"
+                  >
+                    <div>
+                      <div className="font-medium">{cert.name}</div>
+                      <div className="text-sm text-muted-foreground">{cert.course}</div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-5 h-5 text-green-500" />
+                      <Button variant="ghost" size="sm">
+                        <Download className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+        )}
+        <div className="flex justify-between mt-8">
+          <Button variant="outline" onClick={onBack} className="px-8">
+            Back to Templates
+          </Button>
+          {isComplete && (
+            <Button variant="default" className="px-8">
+              Generate More
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};

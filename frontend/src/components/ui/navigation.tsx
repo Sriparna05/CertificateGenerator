@@ -1,28 +1,33 @@
 import { Link, useLocation } from "react-router-dom";
-import { cn } from "@/lib/utils";
+import * as React from "react";
 
-const navLinks = [
-  { to: "/", label: "Home" },
-  { to: "/templates", label: "Templates" },
-  { to: "/generate", label: "Generate" },
-];
+interface NavigationProps {
+  currentStep: string;
+  onStepChange: (step: string) => void;
+}
 
-export function Navigation() {
-  const location = useLocation();
+export const Navigation = ({ currentStep, onStepChange }: NavigationProps) => {
+  const steps = [
+    { key: "home", label: "Home" },
+    { key: "upload", label: "Upload" },
+    { key: "templates", label: "Templates" },
+    { key: "generate", label: "Generate" },
+  ];
+
   return (
-    <nav className="flex gap-4 items-center">
-      {navLinks.map((link) => (
-        <Link
-          key={link.to}
-          to={link.to}
-          className={cn(
-            "text-sm font-medium transition-colors hover:text-primary",
-            location.pathname === link.to ? "text-primary underline" : "text-muted-foreground"
-          )}
+    <nav className="flex gap-4 items-center justify-center py-6">
+      {steps.map((step) => (
+        <button
+          key={step.key}
+          className={`px-4 py-2 rounded transition font-medium text-sm ${
+            currentStep === step.key
+              ? "bg-primary text-white shadow-glow" : "bg-muted text-muted-foreground hover:bg-primary/10"
+          }`}
+          onClick={() => onStepChange(step.key)}
         >
-          {link.label}
-        </Link>
+          {step.label}
+        </button>
       ))}
     </nav>
   );
-}
+};
