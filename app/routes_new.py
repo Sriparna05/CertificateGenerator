@@ -26,7 +26,7 @@ def verify_password(username, password):
 
 def register_routes(app):
     """Register all routes with the Flask app."""
-    
+
     # Health check endpoint
     @app.route("/api/v1/health", methods=["GET"])
     def health_check():
@@ -76,7 +76,7 @@ def register_routes(app):
         response = {
             "job_id": job_id,
             "state": result.state,
-            "result": result.result if result.ready() else None
+            "result": result.result if result.ready() else None,
         }
         return jsonify(response), 200
 
@@ -139,18 +139,20 @@ def register_routes(app):
         errors = schema.validate(data)
         if errors:
             return jsonify({"status": "error", "errors": errors}), 400
-        
+
         try:
             # Generate certificates synchronously
             result = generate_certificate(
-                data['template_id'],
-                data['output_format'],
-                data['recipients'],
-                data.get('ai_options', {})
+                data["template_id"],
+                data["output_format"],
+                data["recipients"],
+                data.get("ai_options", {}),
             )
             return jsonify(result), 200
         except Exception as e:
-            return jsonify({
-                "status": "error", 
-                "message": f"Certificate generation failed: {str(e)}"
-            }), 500
+            return jsonify(
+                {
+                    "status": "error",
+                    "message": f"Certificate generation failed: {str(e)}",
+                }
+            ), 500
