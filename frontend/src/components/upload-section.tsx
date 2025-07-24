@@ -1,6 +1,15 @@
 // import { useRef } from "react";
 import { useState } from "react";
-import { Button, Card, Input, Label, Tabs, TabsContent, TabsList, TabsTrigger } from "./ui";
+import {
+  Button,
+  Card,
+  Input,
+  Label,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "./ui";
 import { Upload, FileText, Plus, X } from "lucide-react";
 import { TechBackground } from "./tech-background";
 
@@ -18,7 +27,7 @@ interface CertificateData {
 export const UploadSection = ({ onNext }: UploadSectionProps) => {
   const [csvData, setCsvData] = useState<File | null>(null);
   const [manualData, setManualData] = useState<CertificateData[]>([
-    { name: "", course: "", date: "", instructor: "" }
+    { name: "", course: "", date: "", instructor: "" },
   ]);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,14 +38,21 @@ export const UploadSection = ({ onNext }: UploadSectionProps) => {
   };
 
   const addManualEntry = () => {
-    setManualData([...manualData, { name: "", course: "", date: "", instructor: "" }]);
+    setManualData([
+      ...manualData,
+      { name: "", course: "", date: "", instructor: "" },
+    ]);
   };
 
   const removeManualEntry = (index: number) => {
     setManualData(manualData.filter((_, i) => i !== index));
   };
 
-  const updateManualEntry = (index: number, field: keyof CertificateData, value: string) => {
+  const updateManualEntry = (
+    index: number,
+    field: keyof CertificateData,
+    value: string
+  ) => {
     const updated = manualData.map((item, i) =>
       i === index ? { ...item, [field]: value } : item
     );
@@ -50,7 +66,8 @@ export const UploadSection = ({ onNext }: UploadSectionProps) => {
         <div className="text-center mb-12 animate-fade-in">
           <h1 className="text-4xl font-bold mb-4">Upload Recipient Data</h1>
           <p className="text-xl text-muted-foreground">
-            Choose how you'd like to provide the certificate recipient information
+            Choose how you'd like to provide the certificate recipient
+            information
           </p>
         </div>
         <Card className="p-8 bg-gradient-card shadow-elegant border-0">
@@ -66,7 +83,7 @@ export const UploadSection = ({ onNext }: UploadSectionProps) => {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="csv" className="space-y-6">
-              <div className="border-2 border-dashed border-border rounded-lg p-12 text-center hover:border-primary/50 transition-colors">
+              <div className="relative border-2 border-dashed border-border rounded-lg p-12 text-center hover:border-primary/50 transition-colors">
                 <Upload className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                 <div className="space-y-2">
                   <h3 className="font-semibold">Drop your CSV file here</h3>
@@ -78,7 +95,9 @@ export const UploadSection = ({ onNext }: UploadSectionProps) => {
                   type="file"
                   accept=".csv,.xlsx,.xls"
                   onChange={handleFileUpload}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  className="absolute left-0 top-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  tabIndex={-1}
+                  aria-label="Upload CSV file"
                 />
               </div>
               {csvData && (
@@ -99,7 +118,8 @@ export const UploadSection = ({ onNext }: UploadSectionProps) => {
               <div className="bg-muted/50 rounded-lg p-4">
                 <h4 className="font-medium mb-2">CSV Format Requirements:</h4>
                 <p className="text-sm text-muted-foreground">
-                  Your CSV should include columns: Name, Course, Date, Instructor
+                  Your CSV should include columns: Name, Course, Date,
+                  Instructor
                 </p>
               </div>
             </TabsContent>
@@ -125,7 +145,9 @@ export const UploadSection = ({ onNext }: UploadSectionProps) => {
                         <Input
                           id={`name-${index}`}
                           value={entry.name}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateManualEntry(index, 'name', e.target.value)}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            updateManualEntry(index, "name", e.target.value)
+                          }
                           placeholder="John Doe"
                         />
                       </div>
@@ -134,7 +156,9 @@ export const UploadSection = ({ onNext }: UploadSectionProps) => {
                         <Input
                           id={`course-${index}`}
                           value={entry.course}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateManualEntry(index, 'course', e.target.value)}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            updateManualEntry(index, "course", e.target.value)
+                          }
                           placeholder="React Development Fundamentals"
                         />
                       </div>
@@ -144,15 +168,25 @@ export const UploadSection = ({ onNext }: UploadSectionProps) => {
                           id={`date-${index}`}
                           type="date"
                           value={entry.date}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateManualEntry(index, 'date', e.target.value)}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            updateManualEntry(index, "date", e.target.value)
+                          }
                         />
                       </div>
                       <div>
-                        <Label htmlFor={`instructor-${index}`}>Instructor</Label>
+                        <Label htmlFor={`instructor-${index}`}>
+                          Instructor
+                        </Label>
                         <Input
                           id={`instructor-${index}`}
                           value={entry.instructor}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateManualEntry(index, 'instructor', e.target.value)}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            updateManualEntry(
+                              index,
+                              "instructor",
+                              e.target.value
+                            )
+                          }
                           placeholder="Jane Smith"
                         />
                       </div>
@@ -174,7 +208,7 @@ export const UploadSection = ({ onNext }: UploadSectionProps) => {
             <Button
               variant="hero"
               onClick={onNext}
-              disabled={!csvData && manualData.every(entry => !entry.name)}
+              disabled={!csvData && manualData.every((entry) => !entry.name)}
               className="px-8"
             >
               Continue to Templates

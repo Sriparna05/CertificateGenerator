@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
-import certificateTemplate from "../assets/certificate-template.png";
+import certificateTemplate from "../assets/certificate-template.jpg";
 import { CheckCircle, Eye } from "lucide-react";
 import { TechBackground } from "./tech-background";
 
@@ -17,7 +17,7 @@ const templates = [
     category: "Technology",
     description: "Clean and professional design perfect for technical courses",
     preview: certificateTemplate,
-    color: "blue"
+    color: "blue",
   },
   {
     id: 2,
@@ -25,7 +25,7 @@ const templates = [
     category: "Management",
     description: "Elegant design for leadership and management certifications",
     preview: certificateTemplate,
-    color: "purple"
+    color: "purple",
   },
   {
     id: 3,
@@ -33,7 +33,7 @@ const templates = [
     category: "Design",
     description: "Artistic template for creative and design courses",
     preview: certificateTemplate,
-    color: "green"
+    color: "green",
   },
   {
     id: 4,
@@ -41,8 +41,8 @@ const templates = [
     category: "Marketing",
     description: "Dynamic design for marketing and business courses",
     preview: certificateTemplate,
-    color: "orange"
-  }
+    color: "orange",
+  },
 ];
 
 export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
@@ -65,8 +65,8 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
               key={template.id}
               className={`relative overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-elegant hover:-translate-y-2 ${
                 selectedTemplate === template.id
-                  ? 'ring-2 ring-primary shadow-glow'
-                  : 'bg-gradient-card shadow-card border-0'
+                  ? "ring-2 ring-primary shadow-glow"
+                  : "bg-gradient-card shadow-card border-0"
               }`}
               onClick={() => setSelectedTemplate(template.id)}
             >
@@ -114,7 +114,7 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
                       Selected Template
                     </label>
                     <p className="text-lg font-semibold">
-                      {templates.find(t => t.id === selectedTemplate)?.name}
+                      {templates.find((t) => t.id === selectedTemplate)?.name}
                     </p>
                   </div>
                   <div>
@@ -122,7 +122,10 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
                       Category
                     </label>
                     <p>
-                      {templates.find(t => t.id === selectedTemplate)?.category}
+                      {
+                        templates.find((t) => t.id === selectedTemplate)
+                          ?.category
+                      }
                     </p>
                   </div>
                   <div>
@@ -130,7 +133,10 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
                       Description
                     </label>
                     <p className="text-muted-foreground">
-                      {templates.find(t => t.id === selectedTemplate)?.description}
+                      {
+                        templates.find((t) => t.id === selectedTemplate)
+                          ?.description
+                      }
                     </p>
                   </div>
                 </div>
@@ -138,7 +144,9 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
 
               <div className="aspect-[4/3] rounded-lg overflow-hidden shadow-card">
                 <img
-                  src={templates.find(t => t.id === selectedTemplate)?.preview}
+                  src={
+                    templates.find((t) => t.id === selectedTemplate)?.preview
+                  }
                   alt="Template preview"
                   className="w-full h-full object-cover"
                 />
@@ -162,7 +170,5 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
         </div>
       </div>
     </div>
-
   );
 };
-
