@@ -14,7 +14,6 @@ const Index = () => {
   const [showError, setShowError] = useState(false);
 
   // Auto-hide feedback and reset state after generation or error
-  import { useEffect } from "react";
   useEffect(() => {
     if (result) {
       setShowResult(true);
