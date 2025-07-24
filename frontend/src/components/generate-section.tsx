@@ -4,96 +4,43 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Download, Mail, CheckCircle, FileText } from "lucide-react";
 import { TechBackground } from "@/components/tech-background";
+import { useGenerate } from "@/hooks/use-generate";
+import { useTemplate } from "@/hooks/use-template";
+import { useUpload } from "@/hooks/use-upload";
 
 interface GenerateSectionProps {
   onBack: () => void;
 }
 
-interface Certificate {
-  recipient_name: string;
-  course_name: string;
-  url: string;
-}
-
 export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
+  const { selected: selectedTemplate } = useTemplate();
+  const { file } = useUpload();
+  const { loading, error, result, generate } = useGenerate();
   const [progress, setProgress] = useState(0);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [isComplete, setIsComplete] = useState(false);
-  const [generatedCertificates, setGeneratedCertificates] = useState<
-    Certificate[]
-  >([]);
 
   // This function will be called when the "Start Generation" button is clicked.
   const startGeneration = async () => {
-    setIsGenerating(true);
-    setProgress(0);
-    setIsComplete(false);
-    setGeneratedCertificates([]);
-
-    // The data to be sent to the backend API.
-    const requestBody = {
-      template_id: "tech_modern_01",
-      output_format: "pdf",
-      recipients: [
-        {
-          name: "John Doe",
-          course: "React Development",
-          certificate_id: "cert-001",
-        },
-        {
-          name: "Jane Smith",
-          course: "Node.js Fundamentals",
-          certificate_id: "cert-002",
-        },
-        {
-          name: "Mike Johnson",
-          course: "Full Stack Development",
-          certificate_id: "cert-003",
-        },
-      ],
-    };
-
-    try {
-      // API call to the Flask backend. [1, 4, 5]
-      const response = await fetch(
-        "http://127.0.0.1:5000/api/v1/certificates/generate",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Certificate generation failed");
-      }
-
-      const data = await response.json();
-      setGeneratedCertificates(data.certificates);
-      setIsComplete(true);
-    } catch (error) {
-      console.error("Error during certificate generation:", error);
-      // Here you could set an error state and display a message to the user.
-    } finally {
-      setIsGenerating(false);
+    if (!file || !selectedTemplate) {
+      console.error("No file or template selected");
+      return;
     }
+
+    await generate(file, selectedTemplate, false); // Use sync generation for now
   };
 
   // Effect to simulate progress bar animation.
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    if (isGenerating) {
+    if (loading) {
       interval = setInterval(() => {
         setProgress((prev) => (prev >= 90 ? 90 : prev + 10)); // Stops at 90% to wait for API response
       }, 200);
     }
-    if (isComplete) {
+    if (result) {
       setProgress(100);
     }
     return () => clearInterval(interval);
-  }, [isGenerating, isComplete]);
+  }, [loading, result]);
 
   return (
     <div className="min-h-screen relative py-16 px-4">
@@ -106,7 +53,7 @@ export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
           </p>
         </div>
 
-        {!isGenerating && !isComplete && (
+        {!loading && !result && !error && (
           <Card className="p-8 bg-gradient-card shadow-elegant border-0 text-center animate-slide-up">
             <div className="space-y-6">
               <div className="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center mx-auto">
@@ -115,17 +62,22 @@ export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
               <div>
                 <h3 className="text-2xl font-bold mb-2">Ready to Generate</h3>
                 <p className="text-muted-foreground">
-                  We'll create 3 certificates using the Modern Tech template
+                  We'll create certificates using the {selectedTemplate}{" "}
+                  template
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                 <div className="bg-background/50 rounded-lg p-4">
-                  <div className="font-medium mb-1">Recipients</div>
-                  <div className="text-muted-foreground">3 people</div>
+                  <div className="font-medium mb-1">File</div>
+                  <div className="text-muted-foreground">
+                    {file?.name || "No file selected"}
+                  </div>
                 </div>
                 <div className="bg-background/50 rounded-lg p-4">
                   <div className="font-medium mb-1">Template</div>
-                  <div className="text-muted-foreground">Modern Tech</div>
+                  <div className="text-muted-foreground">
+                    {selectedTemplate || "No template selected"}
+                  </div>
                 </div>
                 <div className="bg-background/50 rounded-lg p-4">
                   <div className="font-medium mb-1">Format</div>
@@ -137,6 +89,7 @@ export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
                 size="lg"
                 onClick={startGeneration}
                 className="w-full"
+                disabled={!file || !selectedTemplate}
               >
                 Start Generation
               </Button>
@@ -144,7 +97,30 @@ export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
           </Card>
         )}
 
-        {isGenerating && (
+        {error && (
+          <Card className="p-8 bg-gradient-card shadow-elegant border-0 text-center animate-slide-up">
+            <div className="space-y-6">
+              <div className="w-20 h-20 bg-destructive/10 rounded-full flex items-center justify-center mx-auto">
+                <FileText className="w-10 h-10 text-destructive" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold mb-2 text-destructive">
+                  Generation Failed
+                </h3>
+                <p className="text-muted-foreground">{error}</p>
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => window.location.reload()}
+                className="w-full"
+              >
+                Try Again
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {loading && (
           <Card className="p-8 bg-gradient-card shadow-elegant border-0 animate-slide-up">
             <div className="text-center space-y-6">
               <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto">
@@ -168,7 +144,7 @@ export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
           </Card>
         )}
 
-        {isComplete && (
+        {result && (
           <div className="space-y-6 animate-fade-in">
             <Card className="p-8 bg-gradient-card shadow-elegant border-0 text-center">
               <div className="space-y-6">
@@ -180,8 +156,8 @@ export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
                     Certificates Generated!
                   </h3>
                   <p className="text-muted-foreground">
-                    All certificates have been successfully created and are
-                    ready for download
+                    {result.successful} of {result.total_recipients}{" "}
+                    certificates have been successfully created
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -200,24 +176,30 @@ export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
             <Card className="p-6 bg-gradient-card shadow-elegant border-0">
               <h4 className="font-semibold mb-4">Generated Certificates</h4>
               <div className="space-y-3">
-                {generatedCertificates.map((cert, index) => (
+                {result.results.map((cert: any, index: number) => (
                   <div
                     key={index}
                     className="flex items-center justify-between p-3 bg-background/50 rounded-lg"
                   >
                     <div>
-                      <div className="font-medium">{cert.recipient_name}</div>
+                      <div className="font-medium">{cert.recipient}</div>
                       <div className="text-sm text-muted-foreground">
-                        {cert.course_name}
+                        {cert.status === "success"
+                          ? "Generated successfully"
+                          : `Failed: ${cert.error}`}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="w-5 h-5 text-green-500" />
-                      <a href={cert.url} download>
+                      {cert.status === "success" ? (
+                        <CheckCircle className="w-5 h-5 text-green-500" />
+                      ) : (
+                        <FileText className="w-5 h-5 text-red-500" />
+                      )}
+                      {cert.file_path && (
                         <Button variant="ghost" size="sm">
                           <Download className="w-4 h-4" />
                         </Button>
-                      </a>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -230,11 +212,11 @@ export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
           <Button variant="outline" onClick={onBack} className="px-8">
             Back to Templates
           </Button>
-          {isComplete && (
+          {result && (
             <Button
               variant="default"
               className="px-8"
-              onClick={() => setIsComplete(false)}
+              onClick={() => window.location.reload()}
             >
               Generate More
             </Button>
