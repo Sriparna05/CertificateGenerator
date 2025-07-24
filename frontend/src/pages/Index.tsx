@@ -65,7 +65,7 @@ const Index = () => {
           />
         );
       default:
-        return <HeroSection onGetStarted={() => setCurrentStep("upload")} />;
+        return <HeroSection />;
     }
   };
 

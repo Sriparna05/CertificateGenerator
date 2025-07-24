@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 export function PageTransition({ children }: { children: ReactNode }) {
   return (
