@@ -96,18 +96,125 @@ def store_generated_file(
     return dest_path
 
 
-# Output HTML to PDF using WeasyPrint
+# Output HTML to PDF using WeasyPrint with proper page sizing
 def html_to_pdf(html_path, pdf_output_path):
     """
-    Convert a rendered HTML file to PDF using WeasyPrint.
+    Convert HTML certificate to PDF with proper page sizing and formatting.
     Args:
-        html_path (str): Path to the HTML file.
-        pdf_output_path (str): Path to save the PDF.
+        html_path (str): Path to HTML file.
+        pdf_output_path (str): Path for output PDF.
+    Returns:
+        str: Path to generated PDF.
     """
-    # Import here to allow mocking in tests and avoid import errors if WeasyPrint is not installed
-    from weasyprint import HTML
+    try:
+        from weasyprint import HTML, CSS
+        from weasyprint.text.fonts import FontConfiguration
 
-    HTML(html_path).write_pdf(pdf_output_path)
+        # Create font configuration for better font handling
+        font_config = FontConfiguration()
+
+        # Custom CSS for single-page PDF formatting
+        custom_css = CSS(
+            string="""
+            @page {
+                size: A4 landscape;
+                margin: 0;
+                background: white;
+                padding: 0;
+            }
+            
+            html, body {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                box-sizing: border-box;
+            }
+            
+            .certificate {
+                width: 1122px !important;
+                height: 794px !important;
+                max-width: 1122px !important;
+                max-height: 794px !important;
+                page-break-inside: avoid !important;
+                page-break-after: avoid !important;
+                page-break-before: avoid !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                overflow: hidden !important;
+                position: relative !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            
+            * {
+                page-break-inside: avoid !important;
+            }
+        """,
+            font_config=font_config,
+        )
+
+        # Generate PDF with custom CSS and specific options
+        HTML(filename=html_path).write_pdf(
+            pdf_output_path,
+            stylesheets=[custom_css],
+            font_config=font_config,
+            presentational_hints=True,
+            optimize_images=True,
+        )
+        return pdf_output_path
+    except ImportError:
+        print("WeasyPrint not available. Please install with 'pip install weasyprint'")
+        return None
+    except Exception as e:
+        print(f"Error converting HTML to PDF: {e}")
+        return None
+
+
+# Convert HTML to PNG image
+def html_to_image(html_path, image_output_path, format="PNG"):
+    """
+    Convert HTML certificate to image format.
+    Args:
+        html_path (str): Path to HTML file.
+        image_output_path (str): Path for output image.
+        format (str): Image format (PNG, JPEG, etc.).
+    Returns:
+        str: Path to generated image.
+    """
+    try:
+        # Generate PDF first, then convert to image
+        temp_pdf_path = image_output_path.replace(f".{format.lower()}", "_temp.pdf")
+        html_to_pdf(html_path, temp_pdf_path)
+
+        # Convert PDF to image using pdf2image if available
+        try:
+            from pdf2image import convert_from_path
+
+            images = convert_from_path(
+                temp_pdf_path, dpi=300, first_page=1, last_page=1
+            )
+            if images:
+                # Save as specified format
+                images[0].save(
+                    image_output_path, format=format, quality=95, optimize=True
+                )
+                # Clean up temp PDF
+                os.remove(temp_pdf_path)
+                return image_output_path
+        except ImportError:
+            print("pdf2image not available. Install with 'pip install pdf2image'")
+
+        # Fallback: keep the PDF if image conversion fails
+        os.rename(
+            temp_pdf_path, image_output_path.replace(f".{format.lower()}", ".pdf")
+        )
+        return image_output_path.replace(f".{format.lower()}", ".pdf")
+
+    except Exception as e:
+        print(f"Error converting HTML to image: {e}")
+        return None
 
 
 # Output image to PDF/PNG/JPEG using Pillow
@@ -195,7 +302,7 @@ def generate_certificate(template_id, output_format, recipients, ai_options=None
 
     Args:
         template_id (str): Template identifier (e.g., "achievement_template.html")
-        output_format (str): Output format ("pdf", "png", "jpeg")
+        output_format (str): Output format ("pdf", "html", "png", "jpeg")
         recipients (list): List of recipient data dictionaries
         ai_options (dict): AI personalization options
 
@@ -253,7 +360,14 @@ def generate_certificate(template_id, output_format, recipients, ai_options=None
                     pdf_path = os.path.join("generated_certificates", pdf_filename)
                     html_to_pdf(html_path, pdf_path)
                     final_path = pdf_path
-                else:
+                elif output_format.lower() in ["png", "jpeg", "jpg"]:
+                    image_filename = (
+                        f"cert_{certificate_id}_{timestamp}.{output_format.lower()}"
+                    )
+                    image_path = os.path.join("generated_certificates", image_filename)
+                    html_to_image(html_path, image_path, output_format.upper())
+                    final_path = image_path
+                else:  # html format
                     final_path = html_path
 
             elif template_id.endswith((".png", ".jpg", ".jpeg")):

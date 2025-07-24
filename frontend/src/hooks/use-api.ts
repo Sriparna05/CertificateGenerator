@@ -18,7 +18,7 @@ export interface Recipient {
 
 export interface GenerateRequest {
   template_id: string;
-  output_format: "pdf" | "png" | "jpeg";
+  output_format: "pdf" | "html" | "png" | "jpeg";
   recipients: Recipient[];
   ai_options?: {
     prompt?: string;
@@ -185,6 +185,54 @@ export function useApi() {
     }
   };
 
+  const downloadZip = async (
+    filePaths: string[],
+    zipName?: string
+  ): Promise<void> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/certificates/download_zip`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            file_paths: filePaths,
+            zip_name:
+              zipName ||
+              `certificates_${new Date().toISOString().slice(0, 10)}.zip`,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      // Handle the blob response for download
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download =
+        zipName || `certificates_${new Date().toISOString().slice(0, 10)}.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to download ZIP";
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     loading,
     error,
@@ -193,5 +241,6 @@ export function useApi() {
     generateCertificatesAsync,
     getJobStatus,
     checkHealth,
+    downloadZip,
   };
 }

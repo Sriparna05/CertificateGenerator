@@ -14,7 +14,8 @@ export function useGenerate() {
   const generate = async (
     file: File,
     template: string,
-    isAsync: boolean = false
+    isAsync: boolean = false,
+    outputFormat: "pdf" | "html" | "png" | "jpeg" = "pdf"
   ) => {
     setLoading(true);
     setError(null);
@@ -27,7 +28,7 @@ export function useGenerate() {
 
       const request: GenerateRequest = {
         template_id: template,
-        output_format: "pdf",
+        output_format: outputFormat,
         recipients,
         ai_options: {
           prompt: "congratulatory",

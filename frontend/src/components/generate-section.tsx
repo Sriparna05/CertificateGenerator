@@ -2,9 +2,12 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Download, Mail, CheckCircle, FileText } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
+import { Download, Mail, CheckCircle, FileText, Archive } from "lucide-react";
 import { TechBackground } from "@/components/tech-background";
 import { useCertificate } from "@/contexts/CertificateContext";
+import { useApi } from "@/hooks/use-api";
 
 interface GenerateSectionProps {
   onBack: () => void;
@@ -19,7 +22,9 @@ export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
     generateResult: result,
     generate,
   } = useCertificate();
+  const { downloadZip } = useApi();
   const [progress, setProgress] = useState(0);
+  const [selectedFormat, setSelectedFormat] = useState("pdf");
 
   // This function will be called when the "Start Generation" button is clicked.
   const startGeneration = async () => {
@@ -28,7 +33,7 @@ export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
       return;
     }
 
-    await generate(file, selectedTemplate, false); // Use sync generation for now
+    await generate(file, selectedTemplate, false, selectedFormat); // Pass selected format
   };
 
   const downloadCertificate = async (cert: any) => {
@@ -58,12 +63,30 @@ export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
   const downloadAllCertificates = async () => {
     if (!result?.results) return;
 
-    // Download each certificate individually since we don't have a ZIP endpoint
-    for (const cert of result.results) {
-      if (cert.status === "success" && cert.file_path) {
-        await downloadCertificate(cert);
-        // Add a small delay between downloads to avoid overwhelming the browser
-        await new Promise((resolve) => setTimeout(resolve, 500));
+    try {
+      // Get all successful certificate file paths
+      const filePaths = result.results
+        .filter((cert: any) => cert.status === "success" && cert.file_path)
+        .map((cert: any) => cert.file_path);
+
+      if (filePaths.length === 0) {
+        console.error("No certificates available for download");
+        return;
+      }
+
+      // Use ZIP download for multiple files
+      await downloadZip(
+        filePaths,
+        `certificates_${new Date().toISOString().slice(0, 10)}.zip`
+      );
+    } catch (error) {
+      console.error("Failed to download certificates:", error);
+      // Fallback to individual downloads
+      for (const cert of result.results) {
+        if (cert.status === "success" && cert.file_path) {
+          await downloadCertificate(cert);
+          await new Promise((resolve) => setTimeout(resolve, 500));
+        }
       }
     }
   };
@@ -121,9 +144,77 @@ export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
                 </div>
                 <div className="bg-background/50 rounded-lg p-4">
                   <div className="font-medium mb-1">Format</div>
-                  <div className="text-muted-foreground">PDF</div>
+                  <div className="text-muted-foreground">
+                    {selectedFormat.toUpperCase()}
+                  </div>
                 </div>
               </div>
+
+              <div className="space-y-4">
+                <h4 className="font-medium">Download Format</h4>
+                <Tabs
+                  value={selectedFormat}
+                  onValueChange={setSelectedFormat}
+                  className="w-full"
+                >
+                  <TabsList className="grid w-full grid-cols-4">
+                    <TabsTrigger
+                      value="pdf"
+                      className="flex items-center gap-2"
+                    >
+                      <FileText className="w-4 h-4" />
+                      PDF
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="html"
+                      className="flex items-center gap-2"
+                    >
+                      <FileText className="w-4 h-4" />
+                      HTML
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="png"
+                      className="flex items-center gap-2"
+                    >
+                      <FileText className="w-4 h-4" />
+                      PNG
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="jpeg"
+                      className="flex items-center gap-2"
+                    >
+                      <FileText className="w-4 h-4" />
+                      JPEG
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent
+                    value="pdf"
+                    className="text-sm text-muted-foreground mt-3"
+                  >
+                    Professional PDF format, perfect for printing and sharing
+                  </TabsContent>
+                  <TabsContent
+                    value="html"
+                    className="text-sm text-muted-foreground mt-3"
+                  >
+                    Interactive HTML format, great for web viewing and embedding
+                  </TabsContent>
+                  <TabsContent
+                    value="png"
+                    className="text-sm text-muted-foreground mt-3"
+                  >
+                    High-quality PNG image, ideal for social media and
+                    presentations
+                  </TabsContent>
+                  <TabsContent
+                    value="jpeg"
+                    className="text-sm text-muted-foreground mt-3"
+                  >
+                    Compressed JPEG image, smaller file size for easy sharing
+                  </TabsContent>
+                </Tabs>
+              </div>
+
               <Button
                 variant="hero"
                 size="lg"
@@ -131,7 +222,7 @@ export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
                 className="w-full"
                 disabled={!file || !selectedTemplate}
               >
-                Start Generation
+                Generate {selectedFormat.toUpperCase()} Certificates
               </Button>
             </div>
           </Card>
@@ -206,8 +297,8 @@ export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
                     className="flex items-center gap-2"
                     onClick={downloadAllCertificates}
                   >
-                    <Download className="w-4 h-4" />
-                    Download All
+                    <Archive className="w-4 h-4" />
+                    Download ZIP
                   </Button>
                   <Button variant="outline" className="flex items-center gap-2">
                     <Mail className="w-4 h-4" />

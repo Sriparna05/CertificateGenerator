@@ -2,6 +2,9 @@ from flask import jsonify, request, send_file
 from flask_httpauth import HTTPBasicAuth
 from celery.result import AsyncResult
 import os
+import zipfile
+import tempfile
+from datetime import datetime
 
 from app.models import CertificateRequestSchema
 from app.services.certificate_service import (
@@ -121,7 +124,7 @@ def register_routes(app):
                   type: string
                 output_format:
                   type: string
-                  enum: [pdf, png, jpeg]
+                  enum: [pdf, html, png, jpeg]
                 recipients:
                   type: array
                   items:
@@ -187,3 +190,84 @@ def register_routes(app):
                 return jsonify({"error": "File not found"}), 404
         except Exception as e:
             return jsonify({"error": f"Download failed: {str(e)}"}), 500
+
+    # ZIP download endpoint for multiple certificates
+    @app.route("/api/v1/certificates/download_zip", methods=["POST"])
+    def download_certificates_zip():
+        """
+        Create and download a ZIP file containing multiple certificates.
+        ---
+        tags:
+          - Files
+        parameters:
+          - in: body
+            name: body
+            required: true
+            schema:
+              type: object
+              properties:
+                file_paths:
+                  type: array
+                  items:
+                    type: string
+                  description: List of certificate file paths to include in ZIP
+                zip_name:
+                  type: string
+                  description: Optional name for the ZIP file
+        responses:
+          200:
+            description: ZIP file containing certificates
+          400:
+            description: Invalid request
+          404:
+            description: One or more files not found
+        """
+        try:
+            data = request.get_json()
+            if not data or "file_paths" not in data:
+                return jsonify({"error": "file_paths required"}), 400
+
+            file_paths = data["file_paths"]
+            zip_name = data.get(
+                "zip_name",
+                f"certificates_{datetime.now().strftime('%Y%m%d_%H%M%S')}.zip",
+            )
+
+            if not file_paths:
+                return jsonify({"error": "No file paths provided"}), 400
+
+            # Create temporary ZIP file
+            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            temp_zip = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
+
+            with zipfile.ZipFile(temp_zip.name, "w", zipfile.ZIP_DEFLATED) as zipf:
+                for file_path in file_paths:
+                    # Extract filename from path
+                    if isinstance(file_path, str):
+                        filename = (
+                            file_path.split("/")[-1] if "/" in file_path else file_path
+                        )
+                        full_path = os.path.join(
+                            project_root, "generated_certificates", filename
+                        )
+                    else:
+                        continue
+
+                    if os.path.exists(full_path):
+                        # Add file to ZIP with just the filename (no path)
+                        zipf.write(full_path, filename)
+                    else:
+                        print(f"Warning: File not found: {full_path}")
+
+            temp_zip.close()
+
+            # Send the ZIP file
+            return send_file(
+                temp_zip.name,
+                as_attachment=True,
+                download_name=zip_name,
+                mimetype="application/zip",
+            )
+
+        except Exception as e:
+            return jsonify({"error": f"ZIP creation failed: {str(e)}"}), 500

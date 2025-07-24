@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Certificate of Excellence</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&family=Lato:wght@300;400;700&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Lato", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .certificate {
+        width: 800px;
+        height: 600px;
+        background: white;
+        position: relative;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+        page-break-inside: avoid;
+      }
+
+      .ornate-border {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        right: 15px;
+        bottom: 15px;
+        border: 4px solid transparent;
+        background: linear-gradient(45deg, #667eea, #764ba2, #667eea, #764ba2)
+          border-box;
+        border-radius: 8px;
+        -webkit-mask: linear-gradient(#fff 0 0) padding-box,
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: destination-out;
+        mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+        mask-composite: exclude;
+      }
+
+      .inner-border {
+        position: absolute;
+        top: 30px;
+        left: 30px;
+        right: 30px;
+        bottom: 30px;
+        border: 2px solid #667eea;
+        border-radius: 4px;
+      }
+
+      .corner-decoration {
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        transform: rotate(45deg);
+      }
+
+      .corner-decoration.top-left {
+        top: 10px;
+        left: 10px;
+      }
+
+      .corner-decoration.top-right {
+        top: 10px;
+        right: 10px;
+      }
+
+      .corner-decoration.bottom-left {
+        bottom: 10px;
+        left: 10px;
+      }
+
+      .corner-decoration.bottom-right {
+        bottom: 10px;
+        right: 10px;
+      }
+
+      .header {
+        text-align: center;
+        padding: 60px 40px 30px;
+        position: relative;
+        z-index: 2;
+      }
+
+      .certificate-title {
+        font-family: "Crimson Text", serif;
+        font-size: 48px;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 10px;
+        letter-spacing: 4px;
+      }
+
+      .certificate-subtitle {
+        font-size: 22px;
+        color: #667eea;
+        font-weight: 300;
+        letter-spacing: 3px;
+        margin-bottom: 30px;
+      }
+
+      .ribbon {
+        position: absolute;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        padding: 8px 40px;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        z-index: 3;
+      }
+
+      .ribbon::before,
+      .ribbon::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        width: 0;
+        height: 0;
+        border-style: solid;
+      }
+
+      .ribbon::before {
+        left: 0;
+        border-width: 0 0 15px 20px;
+        border-color: transparent transparent #4a5568 transparent;
+      }
+
+      .ribbon::after {
+        right: 0;
+        border-width: 0 20px 15px 0;
+        border-color: transparent #4a5568 transparent transparent;
+      }
+
+      .content {
+        text-align: center;
+        padding: 0 60px;
+        position: relative;
+        z-index: 2;
+      }
+
+      .achievement-text {
+        font-size: 18px;
+        color: #4a5568;
+        margin-bottom: 20px;
+        line-height: 1.6;
+      }
+
+      .recipient-name {
+        font-family: "Crimson Text", serif;
+        font-size: 40px;
+        font-weight: 600;
+        color: #2d3748;
+        margin: 25px 0;
+        position: relative;
+      }
+
+      .recipient-name::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 200px;
+        height: 3px;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+      }
+
+      .course-name {
+        font-size: 24px;
+        color: #667eea;
+        font-weight: 700;
+        margin: 30px 0 20px;
+        font-style: italic;
+      }
+
+      .footer {
+        position: absolute;
+        bottom: 50px;
+        left: 60px;
+        right: 60px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 2;
+      }
+
+      .signature-section {
+        text-align: center;
+      }
+
+      .signature-line {
+        width: 180px;
+        height: 2px;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        margin-bottom: 8px;
+      }
+
+      .signature-label {
+        font-size: 14px;
+        color: #4a5568;
+        font-weight: 600;
+      }
+
+      .signature-name {
+        font-size: 16px;
+        color: #2d3748;
+        font-weight: 400;
+        margin-top: 4px;
+      }
+
+      .organization-logo {
+        position: absolute;
+        top: 40px;
+        right: 60px;
+        font-size: 18px;
+        color: #667eea;
+        font-weight: 700;
+        z-index: 2;
+      }
+
+      @media print {
+        body {
+          background: white;
+          padding: 0;
+          margin: 0;
+        }
+
+        .certificate {
+          width: 100%;
+          height: 100vh;
+          box-shadow: none;
+          border-radius: 0;
+          page-break-inside: avoid;
+          page-break-after: avoid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="certificate">
+      <div class="ornate-border"></div>
+      <div class="inner-border"></div>
+
+      <div class="corner-decoration top-left"></div>
+      <div class="corner-decoration top-right"></div>
+      <div class="corner-decoration bottom-left"></div>
+      <div class="corner-decoration bottom-right"></div>
+
+      <div class="organization-logo">
+        {{ organization or "EXCELLENCE ACADEMY" }}
+      </div>
+      <div class="ribbon">CERTIFICATE OF EXCELLENCE</div>
+
+      <div class="header">
+        <h1 class="certificate-title">EXCELLENCE</h1>
+        <p class="certificate-subtitle">AWARD</p>
+      </div>
+
+      <div class="content">
+        <p class="achievement-text">
+          This prestigious certificate is presented to
+        </p>
+
+        <h2 class="recipient-name">{{ name }}</h2>
+
+        <p class="achievement-text">
+          in recognition of exceptional performance and outstanding achievement
+          in
+        </p>
+
+        <h3 class="course-name">
+          {{ course or "Advanced Professional Development" }}
+        </h3>
+
+        <p class="achievement-text">
+          Demonstrated excellence deserves recognition and celebration.
+        </p>
+      </div>
+
+      <div class="footer">
+        <div class="signature-section">
+          <div class="signature-line"></div>
+          <p class="signature-label">INSTRUCTOR</p>
+          <p class="signature-name">{{ instructor or "Program Director" }}</p>
+        </div>
+
+        <div class="signature-section">
+          <div class="signature-line"></div>
+          <p class="signature-label">DATE AWARDED</p>
+          <p class="signature-name">{{ date or "Date of Award" }}</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
