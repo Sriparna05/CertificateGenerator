@@ -11,13 +11,40 @@ const Index = () => {
   const renderCurrentStep = () => {
     switch (currentStep) {
       case "upload":
-        return <UploadSection onUpload={setUploadedFile} />;
+        return (
+          <UploadSection
+            onUpload={(file) => {
+              setUploadedFile(file);
+              setCurrentStep("templates");
+            }}
+          />
+        );
       case "templates":
-        return <TemplateSection selected={selectedTemplate} onSelect={setSelectedTemplate} />;
+        return (
+          <TemplateSection
+            selected={selectedTemplate}
+            onSelect={(id) => {
+              setSelectedTemplate(id);
+              setCurrentStep("generate");
+            }}
+          />
+        );
       case "generate":
-        return <GenerateSection onGenerate={() => setLoading(true)} loading={loading} />;
+        return (
+          <GenerateSection
+            onGenerate={() => {
+              setLoading(true);
+              // Simulate generation and reset after
+              setTimeout(() => {
+                setLoading(false);
+                setCurrentStep("home");
+              }, 1500);
+            }}
+            loading={loading}
+          />
+        );
       default:
-        return <HeroSection />;
+        return <HeroSection onGetStarted={() => setCurrentStep("upload")} />;
     }
   };
 
