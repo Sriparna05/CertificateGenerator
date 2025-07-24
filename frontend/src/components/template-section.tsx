@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { Button, Card, Badge } from "./ui";
+import { Button } from "./ui/button";
+import { Card } from "./ui/card";
+import { Badge } from "./ui/badge";
 import certificateTemplate from "../assets/certificate-template.png";
 import { CheckCircle, Eye } from "lucide-react";
 import { TechBackground } from "./tech-background";
@@ -56,6 +58,7 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
             Select a professional template that matches your course style
           </p>
         </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {templates.map((template) => (
             <Card
@@ -72,6 +75,7 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
                   <CheckCircle className="w-6 h-6 text-primary bg-background rounded-full" />
                 </div>
               )}
+
               <div className="aspect-[4/3] overflow-hidden">
                 <img
                   src={template.preview}
@@ -79,6 +83,7 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
                   className="w-full h-full object-cover"
                 />
               </div>
+
               <div className="p-4">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold">{template.name}</h3>
@@ -97,6 +102,7 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
             </Card>
           ))}
         </div>
+
         {selectedTemplate && (
           <Card className="p-8 bg-gradient-card shadow-elegant border-0 animate-slide-up">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
@@ -129,6 +135,7 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
                   </div>
                 </div>
               </div>
+
               <div className="aspect-[4/3] rounded-lg overflow-hidden shadow-card">
                 <img
                   src={templates.find(t => t.id === selectedTemplate)?.preview}
@@ -139,6 +146,7 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
             </div>
           </Card>
         )}
+
         <div className="flex justify-between mt-8">
           <Button variant="outline" className="px-8">
             Back to Upload
@@ -154,5 +162,7 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
         </div>
       </div>
     </div>
+
   );
 };
+
