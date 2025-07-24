@@ -58,12 +58,22 @@ const Index = () => {
       </PageTransition>
       {/* Result/Error feedback UI */}
       {result && (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-green-100 text-green-800 px-6 py-3 rounded shadow-lg z-50">
+        <div
+          className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-green-100 text-green-800 px-6 py-3 rounded shadow-lg z-50"
+          role="status"
+          tabIndex={-1}
+          aria-live="polite"
+        >
           Certificates generated successfully!
         </div>
       )}
       {error && (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-red-100 text-red-800 px-6 py-3 rounded shadow-lg z-50">
+        <div
+          className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-red-100 text-red-800 px-6 py-3 rounded shadow-lg z-50"
+          role="alert"
+          tabIndex={-1}
+          aria-live="assertive"
+        >
           {error}
         </div>
       )}
