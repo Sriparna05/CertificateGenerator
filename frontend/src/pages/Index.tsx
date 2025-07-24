@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigation } from "@/components/ui/navigation";
 import { HeroSection, UploadSection, TemplateSection, GenerateSection } from "@/components";
 import { PageTransition } from "@/components/ui";
@@ -10,6 +10,27 @@ const Index = () => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<string>("classic");
   const { loading, result, error, generate } = useGenerate();
+  const [showResult, setShowResult] = useState(false);
+  const [showError, setShowError] = useState(false);
+
+  // Auto-hide feedback and reset state after generation or error
+  import { useEffect } from "react";
+  useEffect(() => {
+    if (result) {
+      setShowResult(true);
+      setUploadedFile(null);
+      setSelectedTemplate("classic");
+      const timer = setTimeout(() => setShowResult(false), 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [result]);
+  useEffect(() => {
+    if (error) {
+      setShowError(true);
+      const timer = setTimeout(() => setShowError(false), 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   const renderCurrentStep = () => {
     switch (currentStep) {
@@ -57,7 +78,7 @@ const Index = () => {
         {renderCurrentStep()}
       </PageTransition>
       {/* Result/Error feedback UI */}
-      {result && (
+      {showResult && (
         <div
           className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-green-100 text-green-800 px-6 py-3 rounded shadow-lg z-50"
           role="status"
@@ -67,7 +88,7 @@ const Index = () => {
           Certificates generated successfully!
         </div>
       )}
-      {error && (
+      {showError && (
         <div
           className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-red-100 text-red-800 px-6 py-3 rounded shadow-lg z-50"
           role="alert"
