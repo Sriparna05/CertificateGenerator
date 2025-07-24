@@ -1,6 +1,7 @@
-from flask import jsonify, request
+from flask import jsonify, request, send_file
 from flask_httpauth import HTTPBasicAuth
 from celery.result import AsyncResult
+import os
 
 from app.models import CertificateRequestSchema
 from app.services.certificate_service import (
@@ -155,3 +156,34 @@ def register_routes(app):
                     "message": f"Certificate generation failed: {str(e)}",
                 }
             ), 500
+
+    # File download endpoint
+    @app.route("/generated_certificates/<path:filename>", methods=["GET"])
+    def download_certificate(filename):
+        """
+        Download a generated certificate file.
+        ---
+        tags:
+          - Files
+        parameters:
+          - in: path
+            name: filename
+            required: true
+            type: string
+            description: The certificate filename to download
+        responses:
+          200:
+            description: Certificate file
+          404:
+            description: File not found
+        """
+        try:
+            # Use absolute path from project root
+            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            file_path = os.path.join(project_root, "generated_certificates", filename)
+            if os.path.exists(file_path):
+                return send_file(file_path, as_attachment=True, download_name=filename)
+            else:
+                return jsonify({"error": "File not found"}), 404
+        except Exception as e:
+            return jsonify({"error": f"Download failed: {str(e)}"}), 500

@@ -10,7 +10,7 @@ import {
   Presentation,
 } from "lucide-react";
 import { TechBackground } from "./tech-background";
-import { useTemplate } from "../hooks/use-template";
+import { useCertificate } from "../contexts/CertificateContext";
 import type { Template } from "../hooks/use-api";
 
 interface TemplateSectionProps {
@@ -18,7 +18,13 @@ interface TemplateSectionProps {
 }
 
 export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
-  const { templates, selected, setSelected, loading, error } = useTemplate();
+  const {
+    templates,
+    selectedTemplate: selected,
+    setSelectedTemplate: setSelected,
+    templatesLoading: loading,
+    templatesError: error,
+  } = useCertificate();
 
   const getTemplateIcon = (type: string) => {
     switch (type) {
@@ -97,7 +103,7 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {templates.map((template) => (
+          {templates.map((template: Template) => (
             <Card
               key={template.name}
               className={`relative overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-elegant hover:-translate-y-2 ${
@@ -154,9 +160,9 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
                       Selected Template
                     </label>
                     <p className="text-lg font-semibold">
-                      {templates.find((t) => t.name === selected) &&
+                      {templates.find((t: Template) => t.name === selected) &&
                         getTemplateName(
-                          templates.find((t) => t.name === selected)!
+                          templates.find((t: Template) => t.name === selected)!
                         )}
                     </p>
                   </div>
@@ -165,12 +171,16 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
                       Type
                     </label>
                     <div className="flex items-center gap-2">
-                      {templates.find((t) => t.name === selected) &&
+                      {templates.find((t: Template) => t.name === selected) &&
                         getTemplateIcon(
-                          templates.find((t) => t.name === selected)!.type
+                          templates.find((t: Template) => t.name === selected)!
+                            .type
                         )}
                       <span className="uppercase">
-                        {templates.find((t) => t.name === selected)?.type}
+                        {
+                          templates.find((t: Template) => t.name === selected)
+                            ?.type
+                        }
                       </span>
                     </div>
                   </div>
@@ -179,9 +189,9 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
                       Description
                     </label>
                     <p className="text-muted-foreground">
-                      {templates.find((t) => t.name === selected) &&
+                      {templates.find((t: Template) => t.name === selected) &&
                         getTemplateDescription(
-                          templates.find((t) => t.name === selected)!
+                          templates.find((t: Template) => t.name === selected)!
                         )}
                     </p>
                   </div>

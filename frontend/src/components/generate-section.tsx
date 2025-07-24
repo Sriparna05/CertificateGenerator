@@ -4,18 +4,21 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Download, Mail, CheckCircle, FileText } from "lucide-react";
 import { TechBackground } from "@/components/tech-background";
-import { useGenerate } from "@/hooks/use-generate";
-import { useTemplate } from "@/hooks/use-template";
-import { useUpload } from "@/hooks/use-upload";
+import { useCertificate } from "@/contexts/CertificateContext";
 
 interface GenerateSectionProps {
   onBack: () => void;
 }
 
 export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
-  const { selected: selectedTemplate } = useTemplate();
-  const { file } = useUpload();
-  const { loading, error, result, generate } = useGenerate();
+  const {
+    file,
+    selectedTemplate,
+    generateLoading: loading,
+    generateError: error,
+    generateResult: result,
+    generate,
+  } = useCertificate();
   const [progress, setProgress] = useState(0);
 
   // This function will be called when the "Start Generation" button is clicked.
@@ -26,6 +29,43 @@ export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
     }
 
     await generate(file, selectedTemplate, false); // Use sync generation for now
+  };
+
+  const downloadCertificate = async (cert: any) => {
+    if (!cert.file_path) {
+      console.error("No file path available for download");
+      return;
+    }
+
+    try {
+      // Extract filename from path (e.g., "generated_certificates/cert_xyz.pdf" -> "cert_xyz.pdf")
+      const filename = cert.file_path.split("/").pop() || cert.file_path;
+      const downloadUrl = `http://127.0.0.1:5000/generated_certificates/${filename}`;
+
+      // Create a temporary link and trigger download
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `${cert.recipient.replace(/\s+/g, "_")}_certificate.pdf`;
+      link.target = "_blank";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Download failed:", error);
+    }
+  };
+
+  const downloadAllCertificates = async () => {
+    if (!result?.results) return;
+
+    // Download each certificate individually since we don't have a ZIP endpoint
+    for (const cert of result.results) {
+      if (cert.status === "success" && cert.file_path) {
+        await downloadCertificate(cert);
+        // Add a small delay between downloads to avoid overwhelming the browser
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+    }
   };
 
   // Effect to simulate progress bar animation.
@@ -161,9 +201,13 @@ export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button variant="hero" className="flex items-center gap-2">
+                  <Button
+                    variant="hero"
+                    className="flex items-center gap-2"
+                    onClick={downloadAllCertificates}
+                  >
                     <Download className="w-4 h-4" />
-                    Download All (ZIP)
+                    Download All
                   </Button>
                   <Button variant="outline" className="flex items-center gap-2">
                     <Mail className="w-4 h-4" />
@@ -196,7 +240,11 @@ export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
                         <FileText className="w-5 h-5 text-red-500" />
                       )}
                       {cert.file_path && (
-                        <Button variant="ghost" size="sm">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => downloadCertificate(cert)}
+                        >
                           <Download className="w-4 h-4" />
                         </Button>
                       )}
