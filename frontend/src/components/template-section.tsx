@@ -1,17 +1,14 @@
+import * as React from "react";
+import { useState, useEffect } from "react";
+import { useApi, type Template } from "../hooks/use-api";
+import { useCertificate } from "../contexts/CertificateContext";
+
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import { Badge } from "./ui/badge";
-import certificateTemplate from "../assets/certificate-template.jpg";
-import {
-  CheckCircle,
-  Eye,
-  FileImage,
-  FileText,
-  Presentation,
-} from "lucide-react";
+import { Skeleton } from "./ui/skeleton"; // Make sure you have a Skeleton component
 import { TechBackground } from "./tech-background";
-import { useCertificate } from "../contexts/CertificateContext";
-import type { Template } from "../hooks/use-api";
+import { TemplatePreviewCard } from "./TemplatePreviewCard";
+import { FileImage, FileText, Presentation } from "lucide-react";
 
 interface TemplateSectionProps {
   onNext: () => void;
@@ -25,6 +22,70 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
     templatesLoading: loading,
     templatesError: error,
   } = useCertificate();
+
+  const { getTemplateContent } = useApi();
+  const [previewContent, setPreviewContent] = useState<string | null>(null);
+  const [previewLoading, setPreviewLoading] = useState<boolean>(false);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+
+  // State to hold content for all templates and a unified loading state for previews
+  const [allTemplateContents, setAllTemplateContents] = useState<
+    Record<string, string>
+  >({});
+  const [previewsLoading, setPreviewsLoading] = useState<boolean>(true);
+
+  // Effect to fetch content for ALL HTML templates at once to prevent glitching
+  useEffect(() => {
+    if (templates && templates.length > 0) {
+      const fetchAllPreviews = async () => {
+        setPreviewsLoading(true);
+
+        const htmlTemplates = templates.filter((t) => t.type === "html");
+
+        const promises = htmlTemplates.map(
+          (template) =>
+            getTemplateContent(template.name)
+              .then((content) => ({ name: template.name, content }))
+              .catch(() => ({ name: template.name, content: null })) // Handle errors gracefully
+        );
+
+        const results = await Promise.all(promises);
+
+        const contents: Record<string, string> = {};
+        results.forEach((result) => {
+          if (result.content) {
+            contents[result.name] = result.content;
+          }
+        });
+
+        setAllTemplateContents(contents);
+        setPreviewsLoading(false);
+      };
+
+      fetchAllPreviews();
+    }
+  }, []);
+
+  // Effect for the LARGE preview at the bottom
+  useEffect(() => {
+    if (selected) {
+      const selectedTemplateData = templates.find((t) => t.name === selected);
+      if (selectedTemplateData && selectedTemplateData.type === "html") {
+        setPreviewLoading(true);
+        // Use the pre-fetched content
+        if (allTemplateContents[selected]) {
+          setPreviewContent(allTemplateContents[selected]);
+          setPreviewLoading(false);
+        } else if (!previewsLoading) {
+          // Only show error if initial load is done
+          setPreviewError("Failed to load preview for this template.");
+          setPreviewLoading(false);
+        }
+      } else {
+        setPreviewContent(null);
+      }
+    }
+  }, [selected, allTemplateContents, previewsLoading, templates]);
 
   const getTemplateIcon = (type: string) => {
     switch (type) {
@@ -40,7 +101,6 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
   };
 
   const getTemplateName = (template: Template) => {
-    // Convert filename to display name
     return template.name
       .replace(/[_-]/g, " ")
       .replace(/\.[^/.]+$/, "")
@@ -49,17 +109,40 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
 
   const getTemplateDescription = (template: Template) => {
     const descriptions: Record<string, string> = {
-      achievement_template:
-        "Perfect for recognizing achievements and accomplishments",
-      completion_template: "Ideal for course completion certificates",
-      basic_template: "Simple and elegant design for any occasion",
+      classic_achievement:
+        "A timeless design for recognizing significant accomplishments.",
+      elegant_excellence:
+        "Sophisticated and refined, perfect for high-level achievements.",
+      modern_achievement:
+        "Clean and contemporary, ideal for modern educational programs.",
+      modern_excellence:
+        "A sleek and professional design for showcasing outstanding performance.",
+      professional_completion:
+        "Formal and clear, suitable for professional course completions.",
+      professional_training:
+        "Designed for training programs, emphasizing skill development.",
     };
-
     const key = template.name.replace(/\.[^/.]+$/, "");
     return (
       descriptions[key] || `Professional ${template.type} certificate template`
     );
   };
+
+  const getLargePreviewHtml = (
+    htmlContent: string | null,
+    templateName: string | null
+  ): string => {
+    if (!htmlContent || !templateName) return "";
+    const isWiderTemplate =
+      templateName.includes("classic_achievement") ||
+      templateName.includes("modern_excellence") ||
+      templateName.includes("professional_training");
+    const scale = isWiderTemplate ? 0.49 : 0.68;
+    const scalingStyles = `<style>body { margin: 0 !important; padding: 0 !important; background: transparent !important; overflow: hidden; } .certificate { transform: scale(${scale}); transform-origin: top left; box-shadow: none !important; border: none !important; position: absolute !important; top: 0; left: 0; }</style>`;
+    return htmlContent.replace(/<\/head>/i, `${scalingStyles}</head>`);
+  };
+
+  const largePreviewHtml = getLargePreviewHtml(previewContent, selected);
 
   if (loading) {
     return (
@@ -103,50 +186,30 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {templates.map((template: Template) => (
-            <Card
-              key={template.name}
-              className={`relative overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-elegant hover:-translate-y-2 ${
-                selected === template.name
-                  ? "ring-2 ring-primary shadow-glow"
-                  : "bg-gradient-card shadow-card border-0"
-              }`}
-              onClick={() => setSelected(template.name)}
-            >
-              {selected === template.name && (
-                <div className="absolute top-3 right-3 z-10">
-                  <CheckCircle className="w-6 h-6 text-primary bg-background rounded-full" />
-                </div>
-              )}
-
-              <div className="aspect-[4/3] overflow-hidden">
-                <img
-                  src={certificateTemplate}
-                  alt={getTemplateName(template)}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold">{getTemplateName(template)}</h3>
-                  <div className="flex items-center gap-1">
-                    {getTemplateIcon(template.type)}
-                    <Badge variant="secondary" className="text-xs uppercase">
-                      {template.type}
-                    </Badge>
+          {previewsLoading
+            ? Array.from({ length: 6 }).map((_, index) => (
+                <Card key={index}>
+                  <Skeleton className="aspect-[4/3] w-full" />
+                  <div className="p-4 space-y-3">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-5/6" />
+                    <Skeleton className="h-9 w-full mt-2" />
                   </div>
-                </div>
-                <p className="text-sm text-muted-foreground mb-3">
-                  {getTemplateDescription(template)}
-                </p>
-                <Button variant="ghost" size="sm" className="w-full">
-                  <Eye className="w-4 h-4 mr-2" />
-                  Preview
-                </Button>
-              </div>
-            </Card>
-          ))}
+                </Card>
+              ))
+            : templates.map((template: Template) => (
+                <TemplatePreviewCard
+                  key={template.name}
+                  template={template}
+                  isSelected={selected === template.name}
+                  onSelect={setSelected}
+                  getTemplateName={getTemplateName}
+                  getTemplateDescription={getTemplateDescription}
+                  getTemplateIcon={getTemplateIcon}
+                  content={allTemplateContents[template.name] || null}
+                />
+              ))}
         </div>
 
         {selected && (
@@ -197,13 +260,25 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
                   </div>
                 </div>
               </div>
-
-              <div className="aspect-[4/3] rounded-lg overflow-hidden shadow-card">
-                <img
-                  src={certificateTemplate}
-                  alt="Template preview"
-                  className="w-full h-full object-cover"
-                />
+              <div className="aspect-[4/3] rounded-lg overflow-hidden shadow-card bg-muted flex items-center justify-center">
+                {previewLoading ? (
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                ) : previewError ? (
+                  <p className="text-destructive text-center p-4">
+                    {previewError}
+                  </p>
+                ) : previewContent ? (
+                  <iframe
+                    srcDoc={largePreviewHtml}
+                    title="Template Preview"
+                    className="w-full h-full border-0"
+                    scrolling="no"
+                  ></iframe>
+                ) : (
+                  <p className="text-muted-foreground">
+                    No preview available for this type.
+                  </p>
+                )}
               </div>
             </div>
           </Card>

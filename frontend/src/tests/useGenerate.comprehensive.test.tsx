@@ -36,6 +36,7 @@ describe("useGenerate - Complete Image Generation Testing", () => {
       getJobStatus: mockGetJobStatus,
       checkHealth: vi.fn(),
       downloadZip: vi.fn(),
+      getTemplateContent: vi.fn(),
     });
   });
 

@@ -99,6 +99,38 @@ def register_routes(app):
         templates = list_templates()
         return jsonify({"templates": templates}), 200
 
+    # Get template content endpoint
+    @app.route("/api/v1/templates/<template_id>/content", methods=["GET"])
+    def get_template_content(template_id):
+        """
+        Get the HTML content of a specific template.
+        ---
+        tags:
+          - Templates
+        parameters:
+          - in: path
+            name: template_id
+            required: true
+            type: string
+            description: The ID of the template to retrieve content for
+        responses:
+          200:
+            description: HTML content of the template
+            schema:
+              type: string
+              format: html
+          404:
+            description: Template not found
+        """
+        template_path = os.path.join(
+            app.root_path, "..", "certificate_templates", "html", template_id
+        )
+        if not os.path.exists(template_path):
+            return jsonify({"error": "Template not found"}), 404
+        with open(template_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        return content, 200, {"Content-Type": "text/html"}
+
     # Synchronous certificate generation endpoint
     @app.route("/api/v1/certificates/generate", methods=["POST"])
     def generate_certificate_sync():

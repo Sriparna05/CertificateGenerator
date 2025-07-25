@@ -1,6 +1,7 @@
 import { useState } from "react";
 
-const API_BASE_URL = "https://certificategenerator-mfya.onrender.com/api/v1";
+//const API_BASE_URL = "https://certificategenerator-mfya.onrender.com/api/v1";
+const API_BASE_URL = "http://127.0.0.1:5000/api/v1";
 
 export interface Template {
   name: string;
@@ -233,6 +234,28 @@ export function useApi() {
     }
   };
 
+  const getTemplateContent = async (templateId: string): Promise<string> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/templates/${templateId}/content`
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      const data = await response.text();
+      return data;
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch template content";
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     loading,
     error,
@@ -242,5 +265,6 @@ export function useApi() {
     getJobStatus,
     checkHealth,
     downloadZip,
+    getTemplateContent,
   };
 }
