@@ -5,9 +5,10 @@ import { TechBackground } from "@/components/tech-background";
 
 interface HeroSectionProps {
   onGetStarted: () => void;
+  onViewTemplates: () => void;
 }
 
-export const HeroSection = ({ onGetStarted }: HeroSectionProps) => {
+export const HeroSection = ({ onGetStarted, onViewTemplates }: HeroSectionProps) => {
   const features = [
     {
       icon: Upload,
@@ -65,6 +66,7 @@ export const HeroSection = ({ onGetStarted }: HeroSectionProps) => {
               <Button
                 variant="outline"
                 size="lg"
+                onClick={onViewTemplates}
                 className="text-lg px-8 py-6 h-auto hover:bg-primary/10 hover:border-primary transition-all duration-300 hover:scale-105"
               >
                 View Templates

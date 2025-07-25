@@ -6,7 +6,6 @@ import { TemplateSection } from "../components/template-section";
 import { GenerateSection } from "../components/generate-section";
 import { PageTransition } from "../components/page-transition";
 import { CertificateProvider } from "../contexts/CertificateContext";
-import { DebugStatus } from "../components/DebugStatus";
 
 const Index = () => {
   const [currentStep, setCurrentStep] = useState("home");
@@ -24,7 +23,12 @@ const Index = () => {
       case "generate":
         return <GenerateSection onBack={() => setCurrentStep("templates")} />;
       default:
-        return <HeroSection onGetStarted={() => setCurrentStep("upload")} />;
+        return (
+          <HeroSection
+            onGetStarted={() => setCurrentStep("upload")}
+            onViewTemplates={() => setCurrentStep("templates")}
+          />
+        );
     }
   };
 
@@ -35,7 +39,6 @@ const Index = () => {
         <PageTransition currentStep={currentStep}>
           {renderCurrentStep()}
         </PageTransition>
-        <DebugStatus />
       </div>
     </CertificateProvider>
   );
