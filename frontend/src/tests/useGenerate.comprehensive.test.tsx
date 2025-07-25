@@ -11,17 +11,31 @@ describe("useGenerate - Complete Image Generation Testing", () => {
   const mockGenerateAsync = vi.fn();
   const mockGetJobStatus = vi.fn();
 
+  const mockSuccessResult = (format: string, count: number = 1) => ({
+      status: "completed",
+      successful: count,
+      failed: 0,
+      results: Array.from({ length: count }, (_, i) => ({
+        recipient: `Test User ${i + 1}`,
+        certificate_id: `test-${i}`,
+        file_path: `/path/to/cert_${i}.${format}`,
+        status: "success",
+      })),
+    });
+
   beforeEach(() => {
     vi.clearAllMocks();
 
     // Mock useApi return value
     vi.mocked(useApiModule.useApi).mockReturnValue({
+      loading: false,
+      error: null,
+      listTemplates: vi.fn(),
       generateCertificatesSync: mockGenerateSync,
       generateCertificatesAsync: mockGenerateAsync,
       getJobStatus: mockGetJobStatus,
-      downloadFile: vi.fn(),
+      checkHealth: vi.fn(),
       downloadZip: vi.fn(),
-      getTemplates: vi.fn(),
     });
   });
 
@@ -42,33 +56,7 @@ describe("useGenerate - Complete Image Generation Testing", () => {
       })),
     });
 
-    it("should handle PNG generation successfully", async () => {
-      const mockResult = mockSuccessResult("png");
-      mockGenerateSync.mockResolvedValue(mockResult);
-
-      const { result } = renderHook(() => useGenerate());
-      const csvFile = createTestFile("name,course\nJohn Doe,Web Development");
-
-      await act(async () => {
-        await result.current.generate(
-          csvFile,
-          "modern_excellence.html",
-          false,
-          "png"
-        );
-      });
-
-      expect(mockGenerateSync).toHaveBeenCalledWith({
-        template_id: "modern_excellence.html",
-        output_format: "png",
-        recipients: [{ name: "John Doe", course: "Web Development" }],
-        ai_options: { prompt: "congratulatory" },
-      });
-
-      expect(result.current.loading).toBe(false);
-      expect(result.current.error).toBeNull();
-      expect(result.current.result).toEqual(mockResult);
-    });
+    it("should handle PNG generation successfully", async () => {      const mockResult = mockSuccessResult("png");      mockGenerateSync.mockResolvedValue(mockResult);      const { result } = renderHook(() => useGenerate());      const csvFile = createTestFile("name,course\nJohn Doe,Web Development");      await act(async () => {        await result.current.generate(          csvFile,          "modern_excellence.html",          false,          "png"        );      });      expect(mockGenerateSync).toHaveBeenCalledWith({        template_id: "modern_excellence.html",        output_format: "png",        recipients: [{ name: "John Doe", course: "Web Development" }],        ai_options: { prompt: "congratulatory" },      });      expect(result.current.loading).toBe(false);      expect(result.current.error).toBeNull();      expect(result.current.result).toEqual(mockResult);    });
 
     it("should handle JPEG generation successfully", async () => {
       const mockResult = mockSuccessResult("jpeg");
@@ -110,7 +98,7 @@ describe("useGenerate - Complete Image Generation Testing", () => {
             csvFile,
             "classic_achievement.html",
             false,
-            format
+            format as "pdf" | "png" | "jpeg" | "html"
           );
         });
 

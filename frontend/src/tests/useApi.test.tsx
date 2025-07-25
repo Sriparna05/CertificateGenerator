@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { useApi } from "../hooks/use-api";
 
 // Mock the useApi hook

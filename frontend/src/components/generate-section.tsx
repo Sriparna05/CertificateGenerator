@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
 import { Download, Mail, CheckCircle, FileText, Archive } from "lucide-react";
 import { TechBackground } from "@/components/tech-background";
 import { useCertificate } from "@/contexts/CertificateContext";
 import { useApi } from "@/hooks/use-api";
+
+type OutputFormat = "pdf" | "html" | "png" | "jpeg";
 
 interface GenerateSectionProps {
   onBack: () => void;
@@ -24,7 +26,7 @@ export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
   } = useCertificate();
   const { downloadZip } = useApi();
   const [progress, setProgress] = useState(0);
-  const [selectedFormat, setSelectedFormat] = useState("pdf");
+  const [selectedFormat, setSelectedFormat] = useState<OutputFormat>("pdf");
 
   // This function will be called when the "Start Generation" button is clicked.
   const startGeneration = async () => {
@@ -154,7 +156,7 @@ export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
                 <h4 className="font-medium">Download Format</h4>
                 <Tabs
                   value={selectedFormat}
-                  onValueChange={setSelectedFormat}
+                  onValueChange={(value) => setSelectedFormat(value as OutputFormat)}
                   className="w-full"
                 >
                   <TabsList className="grid w-full grid-cols-4">

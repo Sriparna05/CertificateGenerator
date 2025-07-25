@@ -16,12 +16,14 @@ describe("useGenerate - Image Generation Tests", () => {
 
     // Mock useApi return value
     vi.mocked(useApiModule.useApi).mockReturnValue({
+      loading: false,
+      error: null,
+      listTemplates: vi.fn(),
       generateCertificatesSync: mockGenerateSync,
       generateCertificatesAsync: mockGenerateAsync,
       getJobStatus: mockGetJobStatus,
-      downloadFile: vi.fn(),
+      checkHealth: vi.fn(),
       downloadZip: vi.fn(),
-      getTemplates: vi.fn(),
     });
   });
 
@@ -382,7 +384,7 @@ describe("useGenerate - Image Generation Tests", () => {
           file,
           "modern_excellence.html",
           false,
-          format
+          format as "pdf" | "png" | "jpeg" | "html"
         );
       });
 
