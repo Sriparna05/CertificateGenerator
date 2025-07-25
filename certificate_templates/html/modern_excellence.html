@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Certificate of Excellence</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      @page {
+        size: A4 landscape;
+        margin: 0;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        margin: 0;
+      }
+
+      .certificate {
+        width: 1122px;
+        height: 794px;
+        background: white;
+        position: relative;
+        overflow: hidden;
+        page-break-inside: avoid;
+        page-break-after: avoid;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .certificate::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(
+            circle at 20% 80%,
+            rgba(102, 126, 234, 0.1) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 20%,
+            rgba(118, 75, 162, 0.1) 0%,
+            transparent 50%
+          );
+        pointer-events: none;
+      }
+
+      .border-decoration {
+        position: absolute;
+        top: 30px;
+        left: 30px;
+        right: 30px;
+        bottom: 30px;
+        border: 3px solid;
+        border-image: linear-gradient(45deg, #667eea, #764ba2, #667eea) 1;
+        border-radius: 12px;
+      }
+
+      .content {
+        position: relative;
+        z-index: 2;
+        padding: 80px 60px;
+        text-align: center;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .header {
+        margin-bottom: 40px;
+      }
+
+      .certificate-title {
+        font-family: "Playfair Display", serif;
+        font-size: 52px;
+        font-weight: 900;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 10px;
+        letter-spacing: -1px;
+      }
+
+      .subtitle {
+        font-size: 20px;
+        color: #6b7280;
+        font-weight: 300;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+      }
+
+      .main-content {
+        margin: 50px 0;
+      }
+
+      .recipient-section {
+        margin-bottom: 40px;
+      }
+
+      .presented-to {
+        font-size: 18px;
+        color: #6b7280;
+        margin-bottom: 15px;
+        font-weight: 400;
+        letter-spacing: 1px;
+      }
+
+      .recipient-name {
+        font-family: "Playfair Display", serif;
+        font-size: 48px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 30px;
+        position: relative;
+      }
+
+      .recipient-name::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 150px;
+        height: 3px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        border-radius: 2px;
+      }
+
+      .achievement-text {
+        font-size: 18px;
+        color: #4b5563;
+        line-height: 1.6;
+        max-width: 700px;
+        margin: 0 auto 30px;
+      }
+
+      .course-name {
+        font-family: "Playfair Display", serif;
+        font-size: 28px;
+        font-weight: 600;
+        color: #1f2937;
+        margin: 20px 0;
+      }
+
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        margin-top: 60px;
+        padding: 0 40px;
+      }
+
+      .signature-section {
+        text-align: center;
+        flex: 1;
+      }
+
+      .signature-line {
+        width: 200px;
+        height: 2px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        margin: 30px auto 10px;
+      }
+
+      .signature-text {
+        font-size: 14px;
+        color: #6b7280;
+        font-weight: 500;
+      }
+
+      .signature-name {
+        font-size: 16px;
+        color: #1f2937;
+        font-weight: 600;
+        margin-top: 5px;
+      }
+
+      .date-section {
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .date {
+        font-size: 16px;
+        color: #1f2937;
+        font-weight: 500;
+      }
+
+      .certificate-id {
+        position: absolute;
+        bottom: 20px;
+        right: 30px;
+        font-size: 12px;
+        color: #9ca3af;
+        font-family: monospace;
+      }
+
+      .decorative-elements {
+        position: absolute;
+        top: 60px;
+        left: 60px;
+        width: 60px;
+        height: 60px;
+        opacity: 0.1;
+      }
+
+      .decorative-elements::before {
+        content: "★";
+        font-size: 40px;
+        color: #667eea;
+      }
+
+      .decorative-elements-right {
+        position: absolute;
+        top: 60px;
+        right: 60px;
+        width: 60px;
+        height: 60px;
+        opacity: 0.1;
+        transform: rotate(180deg);
+      }
+
+      .decorative-elements-right::before {
+        content: "★";
+        font-size: 40px;
+        color: #764ba2;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="certificate">
+      <div class="border-decoration"></div>
+      <div class="decorative-elements"></div>
+      <div class="decorative-elements-right"></div>
+
+      <div class="content">
+        <div class="header">
+          <h1 class="certificate-title">Certificate of Excellence</h1>
+          <p class="subtitle">Outstanding Achievement</p>
+        </div>
+
+        <div class="main-content">
+          <div class="recipient-section">
+            <p class="presented-to">This certificate is proudly presented to</p>
+            <h2 class="recipient-name">{{ recipient_name }}</h2>
+          </div>
+
+          <p class="achievement-text">
+            For demonstrating exceptional dedication, skill, and commitment to
+            excellence in the successful completion of
+          </p>
+
+          <h3 class="course-name">{{ course_name }}</h3>
+
+          <p class="achievement-text">
+            This achievement represents mastery of advanced concepts and the
+            ability to apply knowledge with distinction.
+          </p>
+        </div>
+
+        <div class="footer">
+          <div class="signature-section">
+            <div class="signature-line"></div>
+            <p class="signature-text">Instructor</p>
+            <p class="signature-name">{{ instructor_name }}</p>
+          </div>
+
+          <div class="date-section">
+            <p class="date">{{ completion_date }}</p>
+            <p class="signature-text">Date of Completion</p>
+          </div>
+
+          <div class="signature-section">
+            <div class="signature-line"></div>
+            <p class="signature-text">Director</p>
+            <p class="signature-name">{{ organization_name }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="certificate-id">Certificate ID: {{ certificate_id }}</div>
+    </div>
+  </body>
+</html>

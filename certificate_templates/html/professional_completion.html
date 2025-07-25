@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Certificate of Completion</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Open+Sans:wght@300;400;600&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Open Sans", sans-serif;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .certificate {
+        width: 800px;
+        height: 600px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        position: relative;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        border-radius: 16px;
+        overflow: hidden;
+        page-break-inside: avoid;
+      }
+
+      .geometric-pattern {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: radial-gradient(
+            circle at 100px 100px,
+            rgba(30, 60, 114, 0.1) 2px,
+            transparent 2px
+          ),
+          radial-gradient(
+            circle at 200px 200px,
+            rgba(42, 82, 152, 0.1) 2px,
+            transparent 2px
+          ),
+          radial-gradient(
+            circle at 300px 150px,
+            rgba(30, 60, 114, 0.1) 2px,
+            transparent 2px
+          );
+        background-size: 100px 100px, 150px 150px, 200px 200px;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        text-align: center;
+        padding: 40px 40px 30px;
+        position: relative;
+      }
+
+      .header::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 20px solid transparent;
+        border-right: 20px solid transparent;
+        border-top: 20px solid #2a5298;
+      }
+
+      .certificate-title {
+        font-family: "Merriweather", serif;
+        font-size: 36px;
+        font-weight: 900;
+        margin-bottom: 8px;
+        letter-spacing: 3px;
+      }
+
+      .certificate-subtitle {
+        font-size: 16px;
+        font-weight: 300;
+        letter-spacing: 2px;
+        opacity: 0.9;
+      }
+
+      .content {
+        padding: 50px 60px 30px;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+      }
+
+      .achievement-text {
+        font-size: 16px;
+        color: #2d3748;
+        margin-bottom: 20px;
+        line-height: 1.6;
+      }
+
+      .recipient-name {
+        font-family: "Merriweather", serif;
+        font-size: 32px;
+        font-weight: 700;
+        color: #1e3c72;
+        margin: 25px 0;
+        background: linear-gradient(135deg, #1e3c72, #2a5298);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .course-name {
+        font-size: 20px;
+        color: #2a5298;
+        font-weight: 600;
+        margin: 25px 0;
+        padding: 10px 20px;
+        background: rgba(30, 60, 114, 0.1);
+        border-radius: 25px;
+        display: inline-block;
+      }
+
+      .completion-text {
+        font-size: 14px;
+        color: #4a5568;
+        margin-top: 20px;
+      }
+
+      .footer {
+        position: absolute;
+        bottom: 30px;
+        left: 60px;
+        right: 60px;
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+      }
+
+      .signature-section {
+        text-align: center;
+        flex: 1;
+      }
+
+      .signature-line {
+        width: 180px;
+        height: 1px;
+        background: #2a5298;
+        margin: 0 auto 8px;
+      }
+
+      .signature-label {
+        font-size: 12px;
+        color: #2d3748;
+        font-weight: 600;
+      }
+
+      .signature-name {
+        font-size: 14px;
+        color: #1e3c72;
+        font-weight: 400;
+        margin-top: 4px;
+      }
+
+      .seal {
+        position: absolute;
+        bottom: 40px;
+        right: 60px;
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #1e3c72, #2a5298);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+        box-shadow: 0 10px 20px rgba(30, 60, 114, 0.3);
+      }
+
+      @media print {
+        body {
+          background: white;
+          padding: 0;
+          margin: 0;
+        }
+
+        .certificate {
+          width: 100%;
+          height: 100vh;
+          box-shadow: none;
+          border-radius: 0;
+          page-break-inside: avoid;
+          page-break-after: avoid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="certificate">
+      <div class="geometric-pattern"></div>
+
+      <div class="header">
+        <h1 class="certificate-title">CERTIFICATE</h1>
+        <p class="certificate-subtitle">OF COMPLETION</p>
+      </div>
+
+      <div class="content">
+        <p class="achievement-text">This certificate is proudly presented to</p>
+
+        <h2 class="recipient-name">{{ name }}</h2>
+
+        <p class="achievement-text">for the successful completion of</p>
+
+        <div class="course-name">
+          {{ course or "Professional Development Course" }}
+        </div>
+
+        <p class="completion-text">
+          Awarded in recognition of dedication, hard work, and outstanding
+          achievement
+        </p>
+      </div>
+
+      <div class="footer">
+        <div class="signature-section">
+          <div class="signature-line"></div>
+          <p class="signature-label">INSTRUCTOR</p>
+          <p class="signature-name">{{ instructor or "Course Instructor" }}</p>
+        </div>
+
+        <div class="signature-section">
+          <div class="signature-line"></div>
+          <p class="signature-label">DATE</p>
+          <p class="signature-name">{{ date or "Date of Completion" }}</p>
+        </div>
+      </div>
+
+      <div class="seal">✓</div>
+    </div>
+  </body>
+</html>

@@ -1,4 +1,5 @@
 Flask
+Flask-CORS
 marshmallow
 flask-httpauth
 flasgger
@@ -12,3 +13,6 @@ redis
 pytest
 pytest-flask
 gunicorn
+python-dotenv
+requests
+pdf2image

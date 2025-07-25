@@ -1,0 +1,295 @@
+{
+  "summary": {
+    "total": 57,
+    "passed": 47,
+    "failed": 10,
+    "success_rate": 82.45614035087719
+  },
+  "results": [
+    {
+      "test": "API Health Check",
+      "success": true,
+      "details": "Status: 200"
+    },
+    {
+      "test": "List Templates",
+      "success": true,
+      "details": "Found 6 HTML templates"
+    },
+    {
+      "test": "Generate Certificates - modern_achievement.html (PDF)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Download File - cert_3b2d5554-9e97-46d3-8385-19f7b43b7524_20250725_005129.pdf",
+      "success": true,
+      "details": "File size: 22149 bytes"
+    },
+    {
+      "test": "Generate Certificates - modern_achievement.html (HTML)",
+      "success": false,
+      "details": "HTTP 400"
+    },
+    {
+      "test": "Generate Certificates - modern_achievement.html (PNG)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Download File - cert_d4393555-5e19-470e-a2c8-5ca9371b9a8d_20250725_005136.png",
+      "success": true,
+      "details": "File size: 245685 bytes"
+    },
+    {
+      "test": "Generate Certificates - modern_achievement.html (JPEG)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Download File - cert_f184dc09-30ac-4b4a-b9dc-4035d79e43c6_20250725_005145.jpeg",
+      "success": true,
+      "details": "File size: 399717 bytes"
+    },
+    {
+      "test": "Generate Certificates - professional_completion.html (PDF)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Download File - cert_33502ca2-7dc8-4549-9ae4-67bf8d09217f_20250725_005153.pdf",
+      "success": true,
+      "details": "File size: 21721 bytes"
+    },
+    {
+      "test": "Generate Certificates - professional_completion.html (HTML)",
+      "success": false,
+      "details": "HTTP 400"
+    },
+    {
+      "test": "Generate Certificates - professional_completion.html (PNG)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Download File - cert_0c40dadc-7af4-4fbb-ad79-f75f800b7699_20250725_005158.png",
+      "success": true,
+      "details": "File size: 358713 bytes"
+    },
+    {
+      "test": "Generate Certificates - professional_completion.html (JPEG)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Download File - cert_e18eca95-ac22-4113-a6dd-1164d5026ed7_20250725_005208.jpeg",
+      "success": true,
+      "details": "File size: 313433 bytes"
+    },
+    {
+      "test": "Generate Certificates - elegant_excellence.html (PDF)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Download File - cert_2e660176-01ac-41a7-ba6e-1060086a894a_20250725_005215.pdf",
+      "success": true,
+      "details": "File size: 25345 bytes"
+    },
+    {
+      "test": "Generate Certificates - elegant_excellence.html (HTML)",
+      "success": false,
+      "details": "HTTP 400"
+    },
+    {
+      "test": "Generate Certificates - elegant_excellence.html (PNG)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Download File - cert_2fccccb6-d6e1-40a3-80dc-12624fcb5d39_20250725_005220.png",
+      "success": true,
+      "details": "File size: 551761 bytes"
+    },
+    {
+      "test": "Generate Certificates - elegant_excellence.html (JPEG)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Download File - cert_17ee3775-4fc3-482e-9d9b-4383e76cc381_20250725_005229.jpeg",
+      "success": true,
+      "details": "File size: 458586 bytes"
+    },
+    {
+      "test": "Generate Certificates - modern_excellence.html (PDF)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Download File - cert_13e84dad-b50d-492e-8432-30cc8bf4b52a_20250725_005234.pdf",
+      "success": true,
+      "details": "File size: 32518 bytes"
+    },
+    {
+      "test": "Generate Certificates - modern_excellence.html (HTML)",
+      "success": false,
+      "details": "HTTP 400"
+    },
+    {
+      "test": "Generate Certificates - modern_excellence.html (PNG)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Download File - cert_d5c76670-1ef1-40f0-a84a-0e000a37f159_20250725_005240.png",
+      "success": true,
+      "details": "File size: 441352 bytes"
+    },
+    {
+      "test": "Generate Certificates - modern_excellence.html (JPEG)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Download File - cert_4079ce1f-55b2-4aaf-883f-9f233fc3f576_20250725_005252.jpeg",
+      "success": true,
+      "details": "File size: 525294 bytes"
+    },
+    {
+      "test": "Generate Certificates - professional_training.html (PDF)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Download File - cert_0919016b-2e8a-476b-a588-d6a507eb690e_20250725_005302.pdf",
+      "success": true,
+      "details": "File size: 40120 bytes"
+    },
+    {
+      "test": "Generate Certificates - professional_training.html (HTML)",
+      "success": false,
+      "details": "HTTP 400"
+    },
+    {
+      "test": "Generate Certificates - professional_training.html (PNG)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Download File - cert_bb1a819e-5271-4e3a-b5be-b739d4f9595a_20250725_005309.png",
+      "success": true,
+      "details": "File size: 230035 bytes"
+    },
+    {
+      "test": "Generate Certificates - professional_training.html (JPEG)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Download File - cert_6185e0ab-2413-4c27-9a43-e1d1d04b3b73_20250725_005320.jpeg",
+      "success": true,
+      "details": "File size: 184566 bytes"
+    },
+    {
+      "test": "Generate Certificates - classic_achievement.html (PDF)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Download File - cert_31e0c724-ef80-4b5b-ac90-eadefdbd1b8c_20250725_005330.pdf",
+      "success": true,
+      "details": "File size: 67143 bytes"
+    },
+    {
+      "test": "Generate Certificates - classic_achievement.html (HTML)",
+      "success": false,
+      "details": "HTTP 400"
+    },
+    {
+      "test": "Generate Certificates - classic_achievement.html (PNG)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Download File - cert_16d9fa61-b28d-4319-a17f-f1db2c49ff7f_20250725_005335.png",
+      "success": true,
+      "details": "File size: 201814 bytes"
+    },
+    {
+      "test": "Generate Certificates - classic_achievement.html (JPEG)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Download File - cert_fb8e44d1-1005-47cc-aeef-09c622a0e917_20250725_005343.jpeg",
+      "success": true,
+      "details": "File size: 419030 bytes"
+    },
+    {
+      "test": "ZIP Download",
+      "success": true,
+      "details": "ZIP contains 18 files"
+    },
+    {
+      "test": "Generate Certificates - modern_excellence.html (PDF)",
+      "success": false,
+      "details": "Generated 0/0 certificates"
+    },
+    {
+      "test": "Generate Certificates - modern_excellence.html (PDF)",
+      "success": true,
+      "details": "Generated 4/4 certificates"
+    },
+    {
+      "test": "Non-existent Template",
+      "success": false,
+      "details": "HTTP 200"
+    },
+    {
+      "test": "Invalid Output Format",
+      "success": true,
+      "details": "HTTP 400"
+    },
+    {
+      "test": "Generate Certificates - modern_excellence.html (PDF)",
+      "success": false,
+      "details": "Error: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=30)"
+    },
+    {
+      "test": "Performance Test",
+      "success": false,
+      "details": "Failed to generate certificates"
+    },
+    {
+      "test": "Generate Certificates - modern_excellence.html (PDF)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Generate Certificates - modern_excellence.html (PDF)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Generate Certificates - modern_excellence.html (PDF)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Generate Certificates - modern_excellence.html (PDF)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Generate Certificates - modern_excellence.html (PDF)",
+      "success": true,
+      "details": "Generated 1/1 certificates"
+    },
+    {
+      "test": "Concurrent Requests",
+      "success": true,
+      "details": "5/5 requests successful"
+    }
+  ]
+}
