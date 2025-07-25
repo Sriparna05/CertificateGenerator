@@ -10,6 +10,11 @@ export default defineConfig(() => ({
     port: 8080,
   },
   preview: {
+    allowedHosts: [
+      "certificategenerator1-0.onrender.com",
+      "localhost",
+      "127.0.0.1",
+    ],
     host: "::",
     port: 8080,
     strictPort: true,
