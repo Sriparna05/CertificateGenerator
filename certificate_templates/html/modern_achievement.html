@@ -1,247 +1,260 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Certificate of Achievement</title>
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap");
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: "Inter", sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-      }
-
-      .certificate {
-        width: 800px;
-        height: 600px;
-        background: white;
-        position: relative;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-        border-radius: 12px;
-        overflow: hidden;
-        page-break-inside: avoid;
-      }
-
-      .certificate::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(
-          45deg,
-          transparent 0%,
-          rgba(102, 126, 234, 0.05) 50%,
-          transparent 100%
-        );
-        pointer-events: none;
-      }
-
-      .border-decoration {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        right: 20px;
-        bottom: 20px;
-        border: 3px solid #667eea;
-        border-radius: 8px;
-      }
-
-      .border-decoration::before {
-        content: "";
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        right: 10px;
-        bottom: 10px;
-        border: 1px solid #667eea;
-        border-radius: 4px;
-      }
-
-      .header {
-        text-align: center;
-        padding: 60px 40px 20px;
-        position: relative;
-        z-index: 1;
-      }
-
-      .certificate-title {
-        font-family: "Playfair Display", serif;
-        font-size: 48px;
-        font-weight: 900;
-        color: #2d3748;
-        margin-bottom: 8px;
-        letter-spacing: 2px;
-      }
-
-      .certificate-subtitle {
-        font-size: 20px;
-        color: #667eea;
-        font-weight: 600;
-        letter-spacing: 1px;
-        margin-bottom: 40px;
-      }
-
-      .content {
-        text-align: center;
-        padding: 0 60px;
-        position: relative;
-        z-index: 1;
-      }
-
-      .achievement-text {
-        font-size: 18px;
-        color: #4a5568;
-        margin-bottom: 20px;
-        line-height: 1.6;
-      }
-
-      .recipient-name {
-        font-family: "Playfair Display", serif;
-        font-size: 36px;
-        font-weight: 700;
-        color: #2d3748;
-        margin: 20px 0;
-        text-decoration: underline;
-        text-decoration-color: #667eea;
-        text-underline-offset: 8px;
-        text-decoration-thickness: 2px;
-      }
-
-      .course-name {
-        font-size: 24px;
-        color: #667eea;
-        font-weight: 600;
-        margin: 30px 0;
-        font-style: italic;
-      }
-
-      .footer {
-        position: absolute;
-        bottom: 40px;
-        left: 60px;
-        right: 60px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .signature-section {
-        text-align: center;
-      }
-
-      .signature-line {
-        width: 200px;
-        height: 2px;
-        background: #667eea;
-        margin-bottom: 8px;
-      }
-
-      .signature-label {
-        font-size: 14px;
-        color: #4a5568;
-        font-weight: 500;
-      }
-
-      .date-section {
-        text-align: center;
-      }
-
-      .organization {
-        position: absolute;
-        top: 20px;
-        right: 60px;
-        font-size: 14px;
-        color: #667eea;
-        font-weight: 600;
-      }
-
-      .decorative-element {
-        position: absolute;
-        width: 60px;
-        height: 60px;
-        background: linear-gradient(45deg, #667eea, #764ba2);
-        border-radius: 50%;
-        top: 40px;
-        left: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 24px;
-        font-weight: bold;
-      }
-
-      @media print {
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        @page {
+            size: A4 landscape;
+            margin: 0;
+        }
+        
         body {
-          background: white;
-          padding: 0;
-          margin: 0;
+            font-family: 'Exo 2', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
         }
-
+        
         .certificate {
-          width: 100%;
-          height: 100vh;
-          box-shadow: none;
-          border-radius: 0;
-          page-break-inside: avoid;
-          page-break-after: avoid;
+            width: 1122px;
+            height: 794px;
+            background: #0A0A0A;
+            position: relative;
+            overflow: hidden;
+            page-break-inside: avoid;
+            page-break-after: avoid;
+            border: 2px solid #00FFFF;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
         }
-      }
+        
+        .cyber-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            animation: gridPulse 4s ease-in-out infinite;
+        }
+        
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+        
+        .neon-border {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border: 1px solid #00FFFF;
+            box-shadow: 
+                inset 0 0 20px rgba(0, 255, 255, 0.2),
+                0 0 20px rgba(0, 255, 255, 0.2);
+        }
+        
+        .header {
+            text-align: center;
+            padding: 50px 80px 30px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .cyber-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #00FFFF, #FF00FF);
+            color: #0A0A0A;
+            padding: 8px 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
+        }
+        
+        .title {
+            font-family: 'Orbitron', monospace;
+            font-size: 56px;
+            font-weight: 900;
+            color: #00FFFF;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+            letter-spacing: 4px;
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            color: #FF00FF;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
+        }
+        
+        .content {
+            text-align: center;
+            padding: 0 100px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .data-block {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid #00FFFF;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 25px 0;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .intro-text {
+            font-size: 16px;
+            color: #FFFFFF;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+        
+        .recipient-name {
+            font-family: 'Orbitron', monospace;
+            font-size: 42px;
+            font-weight: 700;
+            color: #00FFFF;
+            margin: 25px 0;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+            text-transform: uppercase;
+        }
+        
+        .data-line {
+            font-size: 14px;
+            color: #CCCCCC;
+            margin: 10px 0;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .data-value {
+            color: #00FFFF;
+            font-weight: 700;
+        }
+        
+        .completion-text {
+            font-size: 16px;
+            color: #FFFFFF;
+            line-height: 1.7;
+            margin: 20px 0;
+        }
+        
+        .footer {
+            position: absolute;
+            bottom: 40px;
+            left: 100px;
+            right: 100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .cyber-seal {
+            background: linear-gradient(45deg, #FF00FF, #00FFFF);
+            color: #0A0A0A;
+            padding: 15px 25px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            text-align: center;
+            clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
+        }
+        
+        .date-display {
+            background: rgba(0, 255, 255, 0.2);
+            border: 1px solid #00FFFF;
+            color: #00FFFF;
+            padding: 15px 25px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            text-align: center;
+        }
+        
+        @media print {
+            body {
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            
+            .certificate {
+                width: 1122px !important;
+                height: 794px !important;
+                box-shadow: none !important;
+                page-break-inside: avoid;
+                page-break-after: avoid;
+            }
+            
+            .cyber-grid {
+                animation: none !important;
+            }
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <div class="certificate">
-      <div class="border-decoration"></div>
-      <div class="decorative-element">★</div>
-      <div class="organization">{{ organization or "Excellence Academy" }}</div>
-
-      <div class="header">
-        <h1 class="certificate-title">CERTIFICATE</h1>
-        <p class="certificate-subtitle">OF ACHIEVEMENT</p>
-      </div>
-
-      <div class="content">
-        <p class="achievement-text">This is to certify that</p>
-
-        <h2 class="recipient-name">{{ name }}</h2>
-
-        <p class="achievement-text">has successfully completed the course</p>
-
-        <h3 class="course-name">
-          "{{ stream or "Professional Development Program" }}"
-        </h3>
-
-        <p class="achievement-text">
-          and has demonstrated excellence in learning and commitment to
-          professional growth.
-        </p>
-      </div>
-
-      <div class="footer">
-        <div class="signature-section">
-          <div class="signature-line"></div>
-          <p class="signature-label">{{ guardian_name or "Course Instructor" }}</p>
+        <div class="cyber-grid"></div>
+        <div class="neon-border"></div>
+        
+        <div class="header">
+            <div class="cyber-badge">Achievement Unlocked</div>
+            <h1 class="title">CERTIFICATE</h1>
+            <div class="subtitle">Digital Achievement</div>
         </div>
-
-        <div class="date-section">
-          <div class="signature-line"></div>
-          <p class="signature-label">{{ completion_date or "Date of Completion" }}</p>
+        
+        <div class="content">
+            <p class="intro-text">
+                SYSTEM NOTIFICATION: Achievement certificate generated by {{ organization }}
+            </p>
+            
+            <h2 class="recipient-name">{{ name }}</h2>
+            
+            <div class="data-block">
+                <div class="data-line">GUARDIAN: <span class="data-value">{{ guardian_name }}</span></div>
+                <div class="data-line">PROGRAM DURATION: <span class="data-value">{{ duration }}</span></div>
+                <div class="data-line">SPECIALIZATION: <span class="data-value">{{ stream }}</span></div>
+                <div class="data-line">INSTITUTION: <span class="data-value">{{ school_college }}</span></div>
+                <div class="data-line">COMPLETION DATE: <span class="data-value">{{ completion_date }}</span></div>
+            </div>
+            
+            <p class="completion-text">
+                All program requirements have been successfully completed with outstanding performance. 
+                This digital certificate validates the achievement and is permanently recorded in our system.
+            </p>
         </div>
-      </div>
+        
+        <div class="footer">
+            <div class="date-display">
+                ISSUED<br>{{ publish_date }}
+            </div>
+            
+            <div class="cyber-seal">
+                {{ organization }}<br>VERIFIED
+            </div>
+        </div>
     </div>
-  </body>
+</body>
 </html>
