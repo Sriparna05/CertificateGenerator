@@ -5,6 +5,15 @@ import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig(() => ({
+  build: {
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // Suppress TypeScript warnings during build
+        if (warning.code === 'UNUSED_EXTERNAL_IMPORT') return;
+        warn(warning);
+      }
+    }
+  },
   server: {
     host: "::",
     port: 8080,
