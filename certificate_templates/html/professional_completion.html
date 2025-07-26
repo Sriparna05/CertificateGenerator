@@ -224,7 +224,7 @@
         <p class="achievement-text">for the successful completion of</p>
 
         <div class="course-name">
-          {{ course or "Professional Development Course" }}
+          {{ stream or "Professional Development Course" }}
         </div>
 
         <p class="completion-text">
@@ -237,13 +237,13 @@
         <div class="signature-section">
           <div class="signature-line"></div>
           <p class="signature-label">INSTRUCTOR</p>
-          <p class="signature-name">{{ instructor or "Course Instructor" }}</p>
+          <p class="signature-name">{{ guardian_name or "Course Instructor" }}</p>
         </div>
 
         <div class="signature-section">
           <div class="signature-line"></div>
           <p class="signature-label">DATE</p>
-          <p class="signature-name">{{ date or "Date of Completion" }}</p>
+          <p class="signature-name">{{ completion_date or "Date of Completion" }}</p>
         </div>
       </div>
 

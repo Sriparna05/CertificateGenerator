@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, act } from "@testing-library/react";
+import { act } from "@testing-library/react-hooks";
 import { useGenerate } from "../hooks/use-generate";
 import * as useApiModule from "../hooks/use-api";
 
@@ -122,11 +122,12 @@ describe("useGenerate - Complete Image Generation Testing", () => {
 
       // Create CSV with multiple recipients
       const csvContent =
-        "name,course,date\n" +
-        Array.from(
-          { length: batchSize },
-          (_, i) => `Student ${i + 1},Course ${i + 1},2025-01-25`
-        ).join("\n");
+      "name,guardian_name,stream,school_college,publish_date,duration,organization,completion_date\n" +
+      Array.from(
+        { length: batchSize },
+        (_, i) =>
+          `Student ${i + 1},Guardian ${i + 1},Stream ${i + 1},College ${i + 1},2025-01-${(i + 1).toString().padStart(2, '0')},${i + 1} hours,Org ${i + 1},2025-02-${(i + 1).toString().padStart(2, '0')}`
+      ).join("\n");
 
       const csvFile = new File([csvContent], "batch.csv", { type: "text/csv" });
 
@@ -160,10 +161,11 @@ describe("useGenerate - Complete Image Generation Testing", () => {
       const { result } = renderHook(() => useGenerate());
 
       const csvContent =
-        "name,course\n" +
+        "name,guardian_name,stream,school_college,publish_date,duration,organization,completion_date\n" +
         Array.from(
           { length: largeBatchSize },
-          (_, i) => `Participant ${i + 1},Advanced Training ${i + 1}`
+          (_, i) =>
+            `Participant ${i + 1},G${i + 1},S${i + 1},C${i + 1},2025-01-${(i + 1).toString().padStart(2, '0')},${i + 1} days,Org ${i + 1},2025-02-${(i + 1).toString().padStart(2, '0')}`
         ).join("\n");
 
       const csvFile = new File([csvContent], "large_batch.csv", {
@@ -193,8 +195,8 @@ describe("useGenerate - Complete Image Generation Testing", () => {
 
       // CSV with special characters, unicode, and emojis
       const csvContent =
-        "name,course,instructor\n" +
-        '"François Müller","Advanced AI & ML 🤖 Course","Dr. José María García"';
+        "name,guardian_name,stream,school_college,publish_date,duration,organization,completion_date\n" +
+        '"François Müller","Jane Müller","Advanced AI & ML 🤖 Course","University of XYZ","2023-01-01","4 years","Tech Corp","2023-05-20"';
 
       const csvFile = new File([csvContent], "special.csv", {
         type: "text/csv",
@@ -212,12 +214,17 @@ describe("useGenerate - Complete Image Generation Testing", () => {
       expect(mockGenerateSync).toHaveBeenCalledWith(
         expect.objectContaining({
           recipients: [
-            expect.objectContaining({
-              name: "François Müller",
-              course: "Advanced AI & ML 🤖 Course",
-              instructor: "Dr. José María García",
-            }),
-          ],
+        {
+          name: "François Müller",
+          guardian_name: "Jane Müller",
+          stream: "Advanced AI & ML 🤖 Course",
+          school_college: "University of XYZ",
+          publish_date: "2023-01-01",
+          duration: "4 years",
+          organization: "Tech Corp",
+          completion_date: "2023-05-20",
+        },
+      ],
         })
       );
 
@@ -294,12 +301,12 @@ describe("useGenerate - Complete Image Generation Testing", () => {
       const { result } = renderHook(() => useGenerate());
 
       const csvContent =
-        "name,course\n" +
-        "Success 1,Course 1\n" +
-        "Success 2,Course 2\n" +
-        "Success 3,Course 3\n" +
-        "Failed 1,Bad Course 1\n" +
-        "Failed 2,Bad Course 2";
+        "name,guardian_name,stream,school_college,publish_date,duration,organization,completion_date\n" +
+        "Success 1,G1,S1,C1,2024-01-01,D1,O1,2024-01-01\n" +
+        "Success 2,G2,S2,C2,2024-01-01,D2,O2,2024-01-01\n" +
+        "Success 3,G3,S3,C3,2024-01-01,D3,O3,2024-01-01\n" +
+        "Failed 1,G4,S4,C4,2024-01-01,D4,O4,2024-01-01\n" +
+        "Failed 2,G5,S5,C5,2024-01-01,D5,O5,2024-01-01";
 
       const csvFile = new File([csvContent], "partial_fail.csv", {
         type: "text/csv",

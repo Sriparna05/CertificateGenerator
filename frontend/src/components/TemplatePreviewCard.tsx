@@ -4,7 +4,13 @@ import type { Template } from "../hooks/use-api";
 import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
-import { CheckCircle, Eye } from "lucide-react";
+import {
+  CheckCircle,
+  Eye,
+  FileImage,
+  FileText,
+  Presentation,
+} from "lucide-react";
 import certificateTemplate from "../assets/certificate-template.jpg";
 
 interface TemplatePreviewCardProps {

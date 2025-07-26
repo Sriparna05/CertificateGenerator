@@ -1,92 +1,50 @@
-import * as React from "react";
-import { useState, useEffect } from "react";
-import { useApi, type Template } from "../hooks/use-api";
+import React, { useState, useEffect } from "react";
 import { useCertificate } from "../contexts/CertificateContext";
+import type { Template } from "../hooks/use-api"; // Still useful for type definition
 
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import { Skeleton } from "./ui/skeleton"; // Make sure you have a Skeleton component
+import { Skeleton } from "./ui/skeleton";
 import { TechBackground } from "./tech-background";
 import { TemplatePreviewCard } from "./TemplatePreviewCard";
 import { FileImage, FileText, Presentation } from "lucide-react";
+import { Label } from "./ui/label";
 
 interface TemplateSectionProps {
   onNext: () => void;
+  onBack: () => void;
 }
 
-export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
+export const TemplateSection = ({ onNext, onBack }: TemplateSectionProps) => {
+  // Destructure EVERYTHING from the single, centralized context
   const {
+    selectedTemplate,
+    setSelectedTemplate,
     templates,
-    selectedTemplate: selected,
-    setSelectedTemplate: setSelected,
-    templatesLoading: loading,
-    templatesError: error,
+    templatesLoading,
+    templatesError,
+    templateContents, // <-- New, from context
+    previewsLoading, // <-- New, from context
   } = useCertificate();
 
-  const { getTemplateContent } = useApi();
-  const [previewContent, setPreviewContent] = useState<string | null>(null);
-  const [previewLoading, setPreviewLoading] = useState<boolean>(false);
-  const [previewError, setPreviewError] = useState<string | null>(null);
+  // Local state is now ONLY for the large preview display
+  const [largePreviewContent, setLargePreviewContent] = useState<string | null>(
+    null
+  );
 
-  // State to hold content for all templates and a unified loading state for previews
-  const [allTemplateContents, setAllTemplateContents] = useState<
-    Record<string, string>
-  >({});
-  const [previewsLoading, setPreviewsLoading] = useState<boolean>(true);
-
-  // Effect to fetch content for ALL HTML templates at once to prevent glitching
+  // Effect to update the large preview when the selection changes
   useEffect(() => {
-    if (templates && templates.length > 0) {
-      const fetchAllPreviews = async () => {
-        setPreviewsLoading(true);
-
-        const htmlTemplates = templates.filter((t) => t.type === "html");
-
-        const promises = htmlTemplates.map(
-          (template) =>
-            getTemplateContent(template.name)
-              .then((content) => ({ name: template.name, content }))
-              .catch(() => ({ name: template.name, content: null })) // Handle errors gracefully
-        );
-
-        const results = await Promise.all(promises);
-
-        const contents: Record<string, string> = {};
-        results.forEach((result) => {
-          if (result.content) {
-            contents[result.name] = result.content;
-          }
-        });
-
-        setAllTemplateContents(contents);
-        setPreviewsLoading(false);
-      };
-
-      fetchAllPreviews();
-    }
-  }, []);
-
-  // Effect for the LARGE preview at the bottom
-  useEffect(() => {
-    if (selected) {
-      const selectedTemplateData = templates.find((t) => t.name === selected);
-      if (selectedTemplateData && selectedTemplateData.type === "html") {
-        setPreviewLoading(true);
-        // Use the pre-fetched content
-        if (allTemplateContents[selected]) {
-          setPreviewContent(allTemplateContents[selected]);
-          setPreviewLoading(false);
-        } else if (!previewsLoading) {
-          // Only show error if initial load is done
-          setPreviewError("Failed to load preview for this template.");
-          setPreviewLoading(false);
-        }
+    if (selectedTemplate && !previewsLoading) {
+      const selectedData = templates?.find((t) => t.name === selectedTemplate);
+      if (selectedData?.type === "html") {
+        setLargePreviewContent(templateContents[selectedTemplate] || null);
       } else {
-        setPreviewContent(null);
+        setLargePreviewContent(null);
       }
     }
-  }, [selected, allTemplateContents, previewsLoading, templates]);
+  }, [selectedTemplate, templateContents, previewsLoading, templates]);
 
+  // --- Helper functions can remain, as they are for display logic ---
   const getTemplateIcon = (type: string) => {
     switch (type) {
       case "html":
@@ -128,48 +86,43 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
     );
   };
 
-  const getLargePreviewHtml = (
-    htmlContent: string | null,
-    templateName: string | null
-  ): string => {
-    if (!htmlContent || !templateName) return "";
+  const getLargePreviewHtml = (htmlContent: string | null): string => {
+    if (!htmlContent || !selectedTemplate) return "";
     const isWiderTemplate =
-      templateName.includes("classic_achievement") ||
-      templateName.includes("modern_excellence") ||
-      templateName.includes("professional_training");
+      selectedTemplate.includes("classic_achievement") ||
+      selectedTemplate.includes("modern_excellence") ||
+      selectedTemplate.includes("professional_training");
     const scale = isWiderTemplate ? 0.49 : 0.68;
     const scalingStyles = `<style>body { margin: 0 !important; padding: 0 !important; background: transparent !important; overflow: hidden; } .certificate { transform: scale(${scale}); transform-origin: top left; box-shadow: none !important; border: none !important; position: absolute !important; top: 0; left: 0; }</style>`;
     return htmlContent.replace(/<\/head>/i, `${scalingStyles}</head>`);
   };
 
-  const largePreviewHtml = getLargePreviewHtml(previewContent, selected);
+  const largePreviewHtml = getLargePreviewHtml(largePreviewContent);
+  const selectedTemplateData = templates?.find(
+    (t) => t.name === selectedTemplate
+  );
 
-  if (loading) {
+  if (templatesLoading) {
     return (
-      <div className="min-h-screen bg-background relative overflow-hidden">
-        <TechBackground />
-        <div className="relative z-10 flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading templates...</p>
-          </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading Templates...</p>
         </div>
       </div>
     );
   }
 
-  if (error) {
+  if (templatesError) {
     return (
-      <div className="min-h-screen bg-background relative overflow-hidden">
-        <TechBackground />
-        <div className="relative z-10 flex items-center justify-center min-h-screen">
-          <div className="text-center max-w-md">
-            <p className="text-destructive mb-4">
-              Error loading templates: {error}
-            </p>
-            <Button onClick={() => window.location.reload()}>Retry</Button>
-          </div>
-        </div>
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <Card className="p-8 text-center bg-destructive/10 border-destructive">
+          <h2 className="text-xl font-bold text-destructive mb-2">
+            Error Loading Templates
+          </h2>
+          <p className="text-muted-foreground mb-4">{templatesError}</p>
+          <Button onClick={() => window.location.reload()}>Try Again</Button>
+        </Card>
       </div>
     );
   }
@@ -181,13 +134,13 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
         <div className="text-center mb-12 animate-fade-in">
           <h1 className="text-4xl font-bold mb-4">Choose Your Template</h1>
           <p className="text-xl text-muted-foreground">
-            Select a professional template that matches your course style
+            Select a professional template that matches your style
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {previewsLoading
-            ? Array.from({ length: 6 }).map((_, index) => (
+            ? Array.from({ length: templates?.length || 6 }).map((_, index) => (
                 <Card key={index}>
                   <Skeleton className="aspect-[4/3] w-full" />
                   <div className="p-4 space-y-3">
@@ -198,82 +151,57 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
                   </div>
                 </Card>
               ))
-            : templates.map((template: Template) => (
+            : templates?.map((template) => (
                 <TemplatePreviewCard
                   key={template.name}
                   template={template}
-                  isSelected={selected === template.name}
-                  onSelect={setSelected}
+                  isSelected={selectedTemplate === template.name}
+                  onSelect={setSelectedTemplate}
                   getTemplateName={getTemplateName}
                   getTemplateDescription={getTemplateDescription}
                   getTemplateIcon={getTemplateIcon}
-                  content={allTemplateContents[template.name] || null}
+                  content={templateContents[template.name] || null}
                 />
               ))}
         </div>
 
-        {selected && (
+        {selectedTemplateData && (
           <Card className="p-8 bg-gradient-card shadow-elegant border-0 animate-slide-up">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
               <div>
                 <h3 className="text-2xl font-bold mb-4">Template Preview</h3>
                 <div className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">
-                      Selected Template
-                    </label>
+                    <Label>Selected Template</Label>
                     <p className="text-lg font-semibold">
-                      {templates.find((t: Template) => t.name === selected) &&
-                        getTemplateName(
-                          templates.find((t: Template) => t.name === selected)!
-                        )}
+                      {getTemplateName(selectedTemplateData)}
                     </p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">
-                      Type
-                    </label>
+                    <Label>Type</Label>
                     <div className="flex items-center gap-2">
-                      {templates.find((t: Template) => t.name === selected) &&
-                        getTemplateIcon(
-                          templates.find((t: Template) => t.name === selected)!
-                            .type
-                        )}
+                      {getTemplateIcon(selectedTemplateData.type)}
                       <span className="uppercase">
-                        {
-                          templates.find((t: Template) => t.name === selected)
-                            ?.type
-                        }
+                        {selectedTemplateData.type}
                       </span>
                     </div>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">
-                      Description
-                    </label>
+                    <Label>Description</Label>
                     <p className="text-muted-foreground">
-                      {templates.find((t: Template) => t.name === selected) &&
-                        getTemplateDescription(
-                          templates.find((t: Template) => t.name === selected)!
-                        )}
+                      {getTemplateDescription(selectedTemplateData)}
                     </p>
                   </div>
                 </div>
               </div>
               <div className="aspect-[4/3] rounded-lg overflow-hidden shadow-card bg-muted flex items-center justify-center">
-                {previewLoading ? (
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                ) : previewError ? (
-                  <p className="text-destructive text-center p-4">
-                    {previewError}
-                  </p>
-                ) : previewContent ? (
+                {largePreviewContent ? (
                   <iframe
                     srcDoc={largePreviewHtml}
                     title="Template Preview"
                     className="w-full h-full border-0"
                     scrolling="no"
-                  ></iframe>
+                  />
                 ) : (
                   <p className="text-muted-foreground">
                     No preview available for this type.
@@ -285,16 +213,16 @@ export const TemplateSection = ({ onNext }: TemplateSectionProps) => {
         )}
 
         <div className="flex justify-between mt-8">
-          <Button variant="outline" className="px-8">
+          <Button variant="outline" onClick={onBack} className="px-8">
             Back to Upload
           </Button>
           <Button
             variant="hero"
             onClick={onNext}
-            disabled={!selected}
+            disabled={!selectedTemplate}
             className="px-8"
           >
-            Generate Certificates
+            Continue to Generate
           </Button>
         </div>
       </div>

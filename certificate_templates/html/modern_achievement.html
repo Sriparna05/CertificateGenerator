@@ -222,7 +222,7 @@
         <p class="achievement-text">has successfully completed the course</p>
 
         <h3 class="course-name">
-          "{{ course or "Professional Development Program" }}"
+          "{{ stream or "Professional Development Program" }}"
         </h3>
 
         <p class="achievement-text">
@@ -234,12 +234,12 @@
       <div class="footer">
         <div class="signature-section">
           <div class="signature-line"></div>
-          <p class="signature-label">{{ instructor or "Course Instructor" }}</p>
+          <p class="signature-label">{{ guardian_name or "Course Instructor" }}</p>
         </div>
 
         <div class="date-section">
           <div class="signature-line"></div>
-          <p class="signature-label">{{ date or "Date of Completion" }}</p>
+          <p class="signature-label">{{ completion_date or "Date of Completion" }}</p>
         </div>
       </div>
     </div>

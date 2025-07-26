@@ -5,6 +5,7 @@ import os
 import zipfile
 import tempfile
 from datetime import datetime
+import logging
 
 from app.models import CertificateRequestSchema
 from app.services.certificate_service import (
@@ -13,6 +14,9 @@ from app.services.certificate_service import (
     generate_certificate,
 )
 from app.celery_worker import celery_app
+
+# Setup basic logging for debugging
+logging.basicConfig(level=logging.DEBUG)
 
 # Auth setup
 auth = HTTPBasicAuth()
@@ -31,51 +35,21 @@ def verify_password(username, password):
 def register_routes(app):
     """Register all routes with the Flask app."""
 
-    # Health check endpoint
     @app.route("/api/v1/health", methods=["GET"])
     def health_check():
         """Basic health check endpoint."""
         return jsonify({"status": "ok"}), 200
 
-    # Async certificate generation endpoint
     @app.route("/api/v1/certificates/generate_async", methods=["POST"])
     def generate_certificate_async_api():
-        """
-        Trigger async certificate generation (Celery).
-        ---
-        tags:
-          - Certificates
-        parameters:
-          - in: body
-            name: body
-            required: true
-            schema:
-              type: object
-        responses:
-          202:
-            description: Job accepted
-        """
+        """Trigger async certificate generation (Celery)."""
         data = request.get_json()
         task = generate_certificate_async.delay(data)
         return jsonify({"status": "accepted", "job_id": task.id}), 202
 
-    # Job status endpoint
     @app.route("/api/v1/jobs/<job_id>", methods=["GET"])
     def get_job_status(job_id):
-        """
-        Get status of an async certificate generation job.
-        ---
-        tags:
-          - Jobs
-        parameters:
-          - in: path
-            name: job_id
-            required: true
-            type: string
-        responses:
-          200:
-            description: Job status
-        """
+        """Get status of an async certificate generation job."""
         result = AsyncResult(job_id, app=celery_app)
         response = {
             "job_id": job_id,
@@ -84,44 +58,16 @@ def register_routes(app):
         }
         return jsonify(response), 200
 
-    # List available templates endpoint
     @app.route("/api/v1/templates", methods=["GET"])
     def get_templates():
-        """
-        List available certificate templates.
-        ---
-        tags:
-          - Templates
-        responses:
-          200:
-            description: List of templates
-        """
+        """List available certificate templates."""
         templates = list_templates()
         return jsonify({"templates": templates}), 200
 
-    # Get template content endpoint
-    @app.route("/api/v1/templates/<template_id>/content", methods=["GET"])
+    @app.route("/api/v1/templates/<path:template_id>/content", methods=["GET"])
     def get_template_content(template_id):
-        """
-        Get the HTML content of a specific template.
-        ---
-        tags:
-          - Templates
-        parameters:
-          - in: path
-            name: template_id
-            required: true
-            type: string
-            description: The ID of the template to retrieve content for
-        responses:
-          200:
-            description: HTML content of the template
-            schema:
-              type: string
-              format: html
-          404:
-            description: Template not found
-        """
+        """Get the HTML content of a specific template."""
+        # This assumes HTML templates are in the 'html' subfolder
         template_path = os.path.join(
             app.root_path, "..", "certificate_templates", "html", template_id
         )
@@ -131,44 +77,9 @@ def register_routes(app):
             content = f.read()
         return content, 200, {"Content-Type": "text/html"}
 
-    # Synchronous certificate generation endpoint
     @app.route("/api/v1/certificates/generate", methods=["POST"])
     def generate_certificate_sync():
-        """
-        Generate one or more certificates.
-        ---
-        tags:
-          - Certificates
-        security:
-          - basicAuth: []
-        parameters:
-          - in: body
-            name: body
-            required: true
-            schema:
-              id: CertificateRequest
-              required:
-                - template_id
-                - output_format
-                - recipients
-              properties:
-                template_id:
-                  type: string
-                output_format:
-                  type: string
-                  enum: [pdf, html, png, jpeg]
-                recipients:
-                  type: array
-                  items:
-                    type: object
-                ai_options:
-                  type: object
-        responses:
-          200:
-            description: Success
-          400:
-            description: Validation error
-        """
+        """Generate one or more certificates."""
         schema = CertificateRequestSchema()
         data = request.get_json()
         errors = schema.validate(data)
@@ -176,7 +87,6 @@ def register_routes(app):
             return jsonify({"status": "error", "errors": errors}), 400
 
         try:
-            # Generate certificates synchronously
             result = generate_certificate(
                 data["template_id"],
                 data["output_format"],
@@ -185,6 +95,7 @@ def register_routes(app):
             )
             return jsonify(result), 200
         except Exception as e:
+            logging.error(f"Certificate generation failed: {e}", exc_info=True)
             return jsonify(
                 {
                     "status": "error",
@@ -192,114 +103,74 @@ def register_routes(app):
                 }
             ), 500
 
-    # File download endpoint
     @app.route("/generated_certificates/<path:filename>", methods=["GET"])
     def download_certificate(filename):
-        """
-        Download a generated certificate file.
-        ---
-        tags:
-          - Files
-        parameters:
-          - in: path
-            name: filename
-            required: true
-            type: string
-            description: The certificate filename to download
-        responses:
-          200:
-            description: Certificate file
-          404:
-            description: File not found
-        """
+        """Download a single generated certificate file."""
+        logging.debug(f"Download request for filename: {filename}")
         try:
-            # Use absolute path from project root
             project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             file_path = os.path.join(project_root, "generated_certificates", filename)
+            
+            logging.debug(f"Attempting to serve file from absolute path: {file_path}")
+
             if os.path.exists(file_path):
-                return send_file(file_path, as_attachment=True, download_name=filename)
+                logging.debug(f"File found: {file_path}. Sending file.")
+                return send_file(file_path, as_attachment=True)
             else:
+                logging.warning(f"File NOT found at path: {file_path}")
                 return jsonify({"error": "File not found"}), 404
         except Exception as e:
+            logging.error(f"Download failed for {filename}: {e}", exc_info=True)
             return jsonify({"error": f"Download failed: {str(e)}"}), 500
 
-    # ZIP download endpoint for multiple certificates
     @app.route("/api/v1/certificates/download_zip", methods=["POST"])
     def download_certificates_zip():
-        """
-        Create and download a ZIP file containing multiple certificates.
-        ---
-        tags:
-          - Files
-        parameters:
-          - in: body
-            name: body
-            required: true
-            schema:
-              type: object
-              properties:
-                file_paths:
-                  type: array
-                  items:
-                    type: string
-                  description: List of certificate file paths to include in ZIP
-                zip_name:
-                  type: string
-                  description: Optional name for the ZIP file
-        responses:
-          200:
-            description: ZIP file containing certificates
-          400:
-            description: Invalid request
-          404:
-            description: One or more files not found
-        """
+        """Create and download a ZIP file containing multiple certificates."""
+        logging.debug("ZIP download request received.")
         try:
             data = request.get_json()
             if not data or "file_paths" not in data:
+                logging.error(f"Missing file_paths in request data: {data}")
                 return jsonify({"error": "file_paths required"}), 400
 
             file_paths = data["file_paths"]
-            zip_name = data.get(
-                "zip_name",
-                f"certificates_{datetime.now().strftime('%Y%m%d_%H%M%S')}.zip",
-            )
-
+            zip_name = data.get("zip_name", f"certificates_{datetime.now().strftime('%Y%m%d_%H%M%S')}.zip")
+            
             if not file_paths:
+                logging.warning("No file paths provided in the request.")
                 return jsonify({"error": "No file paths provided"}), 400
 
-            # Create temporary ZIP file
             project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            temp_zip = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
-
-            with zipfile.ZipFile(temp_zip.name, "w", zipfile.ZIP_DEFLATED) as zipf:
-                for file_path in file_paths:
-                    # Extract filename from path
-                    if isinstance(file_path, str):
-                        filename = (
-                            file_path.split("/")[-1] if "/" in file_path else file_path
-                        )
-                        full_path = os.path.join(
-                            project_root, "generated_certificates", filename
-                        )
-                    else:
+            temp_zip_file = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
+            
+            files_added_count = 0
+            with zipfile.ZipFile(temp_zip_file.name, "w", zipfile.ZIP_DEFLATED) as zipf:
+                for relative_path in file_paths:
+                    if not isinstance(relative_path, str):
                         continue
-
-                    if os.path.exists(full_path):
-                        # Add file to ZIP with just the filename (no path)
-                        zipf.write(full_path, filename)
+                    
+                    absolute_path = os.path.join(project_root, relative_path)
+                    
+                    if os.path.exists(absolute_path):
+                        archive_name = os.path.basename(relative_path)
+                        zipf.write(absolute_path, archive_name)
+                        files_added_count += 1
                     else:
-                        print(f"Warning: File not found: {full_path}")
+                        logging.warning(f"File not found, cannot add to ZIP: {absolute_path}")
+            
+            temp_zip_file.close()
 
-            temp_zip.close()
+            if files_added_count == 0:
+                logging.error("ZIP creation failed, no valid files found.")
+                os.unlink(temp_zip_file.name)
+                return jsonify({"error": "No valid files found to create a ZIP"}), 404
 
-            # Send the ZIP file
             return send_file(
-                temp_zip.name,
+                temp_zip_file.name,
                 as_attachment=True,
                 download_name=zip_name,
                 mimetype="application/zip",
             )
-
         except Exception as e:
+            logging.error(f"ZIP creation failed: {e}", exc_info=True)
             return jsonify({"error": f"ZIP creation failed: {str(e)}"}), 500

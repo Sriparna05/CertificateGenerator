@@ -1,5 +1,5 @@
-name,course,date,instructor,organization
-John Doe,React Development,2025-01-15,Sarah Johnson,Tech Academy
-Jane Smith,Node.js Fundamentals,2025-01-20,Mike Wilson,DevCorp
-Alice Brown,Full Stack Development,2025-01-25,David Chen,CodeSchool
-Bob Johnson,Python Basics,2025-01-30,Emma Davis,LearnHub
+name,guardian_name,stream,school_college,publish_date,duration,organization,completion_date
+John Doe,Jane Doe,Computer Science,MIT,2024-01-01,4 years,Tech Academy,2024-05-20
+Jane Smith,John Smith,Electrical Engineering,Stanford,2023-09-01,2 years,DevCorp,2025-01-15
+Alice Brown,Robert Brown,Mechanical Engineering,Caltech,2022-08-15,3 years,CodeSchool,2025-03-10
+Bob Johnson,Mary Johnson,Physics,Harvard,2021-07-01,5 years,LearnHub,2026-06-30

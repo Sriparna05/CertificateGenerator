@@ -19,7 +19,12 @@ const Index = () => {
       case "upload":
         return <UploadSection onNext={() => setCurrentStep("templates")} />;
       case "templates":
-        return <TemplateSection onNext={() => setCurrentStep("generate")} />;
+        return (
+          <TemplateSection
+            onBack={() => setCurrentStep("upload")}
+            onNext={() => setCurrentStep("generate")}
+          />
+        );
       case "generate":
         return <GenerateSection onBack={() => setCurrentStep("templates")} />;
       default:

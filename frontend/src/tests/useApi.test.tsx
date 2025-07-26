@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render } from "@testing-library/react";
+
 import { useApi } from "../hooks/use-api";
 
 // Mock the useApi hook
@@ -391,16 +391,4 @@ describe("useApi Hook", () => {
   });
 });
 
-// Helper function to render hooks (simplified version)
-function renderHook(callback: () => any) {
-  let result: any;
 
-  function TestComponent() {
-    result = callback();
-    return null;
-  }
-
-  render(<TestComponent />);
-
-  return { result };
-}

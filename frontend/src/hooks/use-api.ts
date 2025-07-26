@@ -10,10 +10,13 @@ export interface Template {
 
 export interface Recipient {
   name: string;
-  course?: string;
-  date?: string;
-  instructor?: string;
+  guardian_name?: string;
+  stream?: string;
+  school_college?: string;
+  publish_date?: string;
+  duration?: string;
   organization?: string;
+  completion_date?: string;
   [key: string]: string | undefined;
 }
 

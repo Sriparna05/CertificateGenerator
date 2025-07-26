@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, act } from "@testing-library/react";
+import { act } from "@testing-library/react-hooks";
 import { useGenerate } from "../hooks/use-generate";
 import * as useApiModule from "../hooks/use-api";
 
@@ -10,6 +10,18 @@ describe("useGenerate - Image Generation Tests", () => {
   const mockGenerateSync = vi.fn();
   const mockGenerateAsync = vi.fn();
   const mockGetJobStatus = vi.fn();
+
+  const mockSuccessResult = (format: string, count: number = 1) => ({
+    status: "completed",
+    successful: count,
+    failed: 0,
+    results: Array.from({ length: count }, (_, i) => ({
+      recipient: `Test User ${i + 1}`,
+      certificate_id: `test-${i}`,
+      file_path: `/path/to/cert_${i}.${format}`,
+      status: "success",
+    })),
+  });
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -48,7 +60,7 @@ describe("useGenerate - Image Generation Tests", () => {
     const { result } = renderHook(() => useGenerate());
 
     // Create a mock CSV file with image format
-    const csvContent = "name,course,date\nTest User,Advanced Python,2025-01-25";
+    const csvContent = "name,guardian_name,stream,school_college,publish_date,duration,organization,completion_date\nTest User,Jane Doe,Computer Science,MIT,2024-01-01,4 years,Tech Academy,2024-05-20";
     const file = new File([csvContent], "test.csv", { type: "text/csv" });
 
     await act(async () => {
@@ -64,7 +76,16 @@ describe("useGenerate - Image Generation Tests", () => {
       template_id: "modern_excellence.html",
       output_format: "png",
       recipients: [
-        { name: "Test User", course: "Advanced Python", date: "2025-01-25" },
+        {
+          name: "Test User",
+          guardian_name: "Jane Doe",
+          stream: "Computer Science",
+          school_college: "MIT",
+          publish_date: "2024-01-01",
+          duration: "4 years",
+          organization: "Tech Academy",
+          completion_date: "2024-05-20",
+        },
       ],
       ai_options: { prompt: "congratulatory" },
     });
@@ -94,7 +115,8 @@ describe("useGenerate - Image Generation Tests", () => {
     const { result } = renderHook(() => useGenerate());
 
     const csvContent =
-      "name,course,date\nJPEG Test User,Image Processing,2025-01-25";
+      "name,guardian_name,stream,school_college,publish_date,duration,organization,completion_date\n" +
+      "JPEG Test User,John Doe,Electrical Engineering,Stanford,2023-09-01,2 years,DevCorp,2025-01-15";
     const file = new File([csvContent], "test.csv", { type: "text/csv" });
 
     await act(async () => {
@@ -112,8 +134,13 @@ describe("useGenerate - Image Generation Tests", () => {
       recipients: [
         {
           name: "JPEG Test User",
-          course: "Image Processing",
-          date: "2025-01-25",
+          guardian_name: "John Doe",
+          stream: "Electrical Engineering",
+          school_college: "Stanford",
+          publish_date: "2023-09-01",
+          duration: "2 years",
+          organization: "DevCorp",
+          completion_date: "2025-01-15",
         },
       ],
       ai_options: { prompt: "congratulatory" },
@@ -153,7 +180,7 @@ describe("useGenerate - Image Generation Tests", () => {
 
     const { result } = renderHook(() => useGenerate());
 
-    const csvContent = "name,course\nUser 1,Course 1\nUser 2,Course 2";
+    const csvContent = "name,guardian_name,stream,school_college,publish_date,duration,organization,completion_date\nUser 1,G1,S1,C1,2024-01-01,1yr,Org1,2024-01-01\nUser 2,G2,S2,C2,2024-01-01,1yr,Org2,2024-01-01";
     const file = new File([csvContent], "batch.csv", { type: "text/csv" });
 
     await act(async () => {
@@ -169,8 +196,8 @@ describe("useGenerate - Image Generation Tests", () => {
       template_id: "classic_achievement.html",
       output_format: "png",
       recipients: [
-        { name: "User 1", course: "Course 1" },
-        { name: "User 2", course: "Course 2" },
+        { name: "User 1", guardian_name: "G1", stream: "S1", school_college: "C1", publish_date: "2024-01-01", duration: "1yr", organization: "Org1", completion_date: "2024-01-01" },
+        { name: "User 2", guardian_name: "G2", stream: "S2", school_college: "C2", publish_date: "2024-01-01", duration: "1yr", organization: "Org2", completion_date: "2024-01-01" },
       ],
       ai_options: { prompt: "congratulatory" },
     });
@@ -209,7 +236,8 @@ describe("useGenerate - Image Generation Tests", () => {
 
     // CSV with special characters and emojis
     const csvContent =
-      'name,course,instructor\n"François Müller","Advanced AI 🤖","Dr. José García"';
+      "name,guardian_name,stream,school_college,publish_date,duration,organization,completion_date\n" +
+      "François Müller,Jane Müller,Computer Science,University of XYZ,2023-01-01,4 years,Tech Corp,2023-05-20";
     const file = new File([csvContent], "special.csv", { type: "text/csv" });
 
     await act(async () => {
@@ -226,9 +254,18 @@ describe("useGenerate - Image Generation Tests", () => {
       output_format: "png",
       recipients: [
         {
+          recipients: [
+        {
           name: "François Müller",
-          course: "Advanced AI 🤖",
-          instructor: "Dr. José García",
+          guardian_name: "Jane Müller",
+          stream: "Computer Science",
+          school_college: "University of XYZ",
+          publish_date: "2023-01-01",
+          duration: "4 years",
+          organization: "Tech Corp",
+          completion_date: "2023-05-20",
+        },
+      ],
         },
       ],
       ai_options: { prompt: "congratulatory" },
@@ -240,8 +277,13 @@ describe("useGenerate - Image Generation Tests", () => {
   it("should handle large batch image generation", async () => {
     const recipients = Array.from({ length: 50 }, (_, i) => ({
       name: `Student ${i + 1}`,
-      course: "Batch Processing Course",
-      date: "2025-01-25",
+      guardian_name: `Guardian ${i + 1}`,
+      stream: `Stream ${i + 1}`,
+      school_college: `College ${i + 1}`,
+      publish_date: `2025-01-${(i + 1).toString().padStart(2, '0')}`,
+      duration: `${i + 1} hours`,
+      organization: `Org ${i + 1}`,
+      completion_date: `2025-02-${(i + 1).toString().padStart(2, '0')}`,
     }));
 
     const mockResult = {
@@ -262,8 +304,10 @@ describe("useGenerate - Image Generation Tests", () => {
 
     // Generate CSV with 50 recipients
     const csvContent =
-      "name,course,date\n" +
-      recipients.map((r) => `${r.name},${r.course},${r.date}`).join("\n");
+      "name,guardian_name,stream,school_college,publish_date,duration,organization,completion_date\n" +
+      recipients.map((r) =>
+        `"${r.name}","${r.guardian_name}","${r.stream}","${r.school_college}","${r.publish_date}","${r.duration}","${r.organization}","${r.completion_date}"`
+      ).join("\n");
     const file = new File([csvContent], "batch.csv", { type: "text/csv" });
 
     await act(async () => {
@@ -290,7 +334,9 @@ describe("useGenerate - Image Generation Tests", () => {
 
     const { result } = renderHook(() => useGenerate());
 
-    const csvContent = "name,course\nError Test,Failed Course";
+    const csvContent =
+      "name,guardian_name,stream,school_college,publish_date,duration,organization,completion_date\n" +
+      "Error Test,G,S,C,2024-01-01,D,O,2024-01-01";
     const file = new File([csvContent], "error.csv", { type: "text/csv" });
 
     await act(async () => {
@@ -337,7 +383,10 @@ describe("useGenerate - Image Generation Tests", () => {
     const { result } = renderHook(() => useGenerate());
 
     const csvContent =
-      "name,course\nSuccess 1,Course 1\nSuccess 2,Course 2\nFailed User,Invalid Course";
+      "name,guardian_name,stream,school_college,publish_date,duration,organization,completion_date\n" +
+      "Success 1,G1,S1,C1,2024-01-01,D1,O1,2024-01-01\n" +
+      "Success 2,G2,S2,C2,2024-01-01,D2,O2,2024-01-01\n" +
+      "Failed User,G3,S3,C3,2024-01-01,D3,O3,2024-01-01";
     const file = new File([csvContent], "partial.csv", { type: "text/csv" });
 
     await act(async () => {
@@ -373,7 +422,7 @@ describe("useGenerate - Image Generation Tests", () => {
 
     const { result } = renderHook(() => useGenerate());
 
-    const csvContent = "name,course\nFormat Test,Format Testing";
+    const csvContent = "name,guardian_name,stream,school_college,publish_date,duration,organization,completion_date\nFormat Test,G,S,C,2024-01-01,D,O,2024-01-01";
     const file = new File([csvContent], "format.csv", { type: "text/csv" });
 
     // Test with each supported format
@@ -406,7 +455,7 @@ describe("useGenerate - Image Generation Tests", () => {
 
     const { result } = renderHook(() => useGenerate());
 
-    const csvContent = "name,course\nTimeout Test,Long Running Course";
+    const csvContent = "name,guardian_name,stream,school_college,publish_date,duration,organization,completion_date\nTimeout Test,G,S,C,2024-01-01,D,O,2024-01-01";
     const file = new File([csvContent], "timeout.csv", { type: "text/csv" });
 
     await act(async () => {

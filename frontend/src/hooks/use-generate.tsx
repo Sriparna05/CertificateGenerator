@@ -93,39 +93,39 @@ export function useGenerate() {
       const reader = new FileReader();
 
       reader.onload = (e) => {
-        try {
-          const csv = e.target?.result as string;
-          const lines = csv.split("\n").filter((line) => line.trim());
+        const csv = e.target?.result as string;
+        Papa.parse(csv, {
+          header: true,
+          skipEmptyLines: true,
+          complete: (results) => {
+            if (results.errors.length) {
+              reject(new Error(`CSV parsing errors: ${results.errors.map(err => err.message).join(", ")}`));
+              return;
+            }
+            if (!results.data.length) {
+              reject(new Error("CSV must have at least one data row"));
+              return;
+            }
 
-          if (lines.length < 2) {
-            reject(
-              new Error("CSV must have at least a header and one data row")
-            );
-            return;
-          }
-
-          const headers = lines[0]
-            .split(",")
-            .map((h) => h.trim().toLowerCase());
-          const recipients: Recipient[] = [];
-
-          for (let i = 1; i < lines.length; i++) {
-            const values = lines[i].split(",").map((v) => v.trim());
-            const recipient: Recipient = { name: "Unknown" };
-
-            headers.forEach((header, index) => {
-              if (values[index]) {
-                recipient[header] = values[index];
-              }
+            const recipients: Recipient[] = results.data.map((row: any) => {
+              const recipient: Recipient = {
+                name: row.name || "Unknown",
+                guardian_name: row.guardian_name || undefined,
+                stream: row.stream || undefined,
+                school_college: row.school_college || undefined,
+                publish_date: row.publish_date || undefined,
+                duration: row.duration || undefined,
+                organization: row.organization || undefined,
+                completion_date: row.completion_date || undefined,
+              };
+              return recipient;
             });
-
-            recipients.push(recipient);
-          }
-
-          resolve(recipients);
-        } catch (err) {
-          reject(new Error("Failed to parse CSV file"));
-        }
+            resolve(recipients);
+          },
+          error: (err) => {
+            reject(new Error(`Failed to parse CSV file: ${err.message}`));
+          },
+        });
       };
 
       reader.onerror = () => reject(new Error("Failed to read file"));
