@@ -7,23 +7,26 @@ import React, {
   useEffect,
   type ReactNode,
 } from "react";
-import Papa from "papaparse";
-import { useApi, type Template } from "../hooks/use-api"; // Assuming useApi and Template are here
+import type { Template } from "../hooks/use-api";
+import { useApi } from "../hooks/use-api";
+import { useUpload } from "../hooks/use-upload";
+import { useGenerate } from "../hooks/use-generate";
 
 interface CertificateContextType {
   file: File | null;
   onUpload: (file: File | null) => void;
+  uploadError: string | null;
 
   templates: Template[];
   templatesLoading: boolean;
   templatesError: string | null;
 
-  selectedTemplate: string | null;
-  setSelectedTemplate: (template: string | null) => void;
-
-  // NEW: State for pre-fetched preview content
+  // NEW: State for pre-fetched preview content is now part of the context
   templateContents: Record<string, string>;
   previewsLoading: boolean;
+
+  selectedTemplate: string | null;
+  setSelectedTemplate: (template: string | null) => void;
 
   generate: (
     file: File,
@@ -41,44 +44,59 @@ const CertificateContext = createContext<CertificateContextType | undefined>(
 );
 
 export const CertificateProvider = ({ children }: { children: ReactNode }) => {
-  const [file, setFile] = useState<File | null>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
-
-  // Use the API hook inside the context
+  const { file, onUpload, error: uploadError } = useUpload();
+  const {
+    loading: generateLoading,
+    error: generateError,
+    result: generateResult,
+    generate,
+  } = useGenerate();
   const { listTemplates, getTemplateContent } = useApi();
 
-  // State for the template list
   const [templates, setTemplates] = useState<Template[]>([]);
   const [templatesLoading, setTemplatesLoading] = useState(true);
   const [templatesError, setTemplatesError] = useState<string | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
 
-  // NEW: State for preview content
   const [templateContents, setTemplateContents] = useState<
     Record<string, string>
   >({});
   const [previewsLoading, setPreviewsLoading] = useState(true);
 
-  // Effect to fetch the list of templates
+  // Effect 1: Fetch the list of templates
   useEffect(() => {
-    const fetchTemplates = async () => {
+    const fetchTemplateList = async () => {
       try {
         setTemplatesLoading(true);
         const response = await listTemplates();
-        const templateList: Template[] = response.templates.html.map(
-          (name) => ({ name, type: "html" })
-        );
-        // Add other types (images, pptx) if needed
+        const templateList: Template[] = [
+          ...response.templates.html.map((name) => ({
+            name,
+            type: "html" as const,
+          })),
+          ...response.templates.images.map((name) => ({
+            name,
+            type: "image" as const,
+          })),
+          ...response.templates.pptx.map((name) => ({
+            name,
+            type: "pptx" as const,
+          })),
+        ];
         setTemplates(templateList);
+        if (templateList.length > 0 && !selectedTemplate) {
+          setSelectedTemplate(templateList[0].name);
+        }
       } catch (err: any) {
         setTemplatesError(err.message || "Failed to fetch templates");
       } finally {
         setTemplatesLoading(false);
       }
     };
-    fetchTemplates();
+    fetchTemplateList();
   }, [listTemplates]);
 
-  // NEW: Effect to fetch HTML content for all templates once the list is available
+  // Effect 2: Fetch HTML content for all templates once the list is available
   useEffect(() => {
     if (!templatesLoading && templates.length > 0) {
       const fetchAllPreviews = async () => {
@@ -103,34 +121,22 @@ export const CertificateProvider = ({ children }: { children: ReactNode }) => {
         setPreviewsLoading(false);
       };
       fetchAllPreviews();
+    } else if (!templatesLoading) {
+      setPreviewsLoading(false); // Stop loading if no templates found
     }
   }, [templates, templatesLoading, getTemplateContent]);
-
-  const onUpload = (uploadedFile: File | null) => setFile(uploadedFile);
-
-  // ... (generate function and its state)
-  const [generateLoading, setGenerateLoading] = useState<boolean>(false);
-  const [generateError, setGenerateError] = useState<string | null>(null);
-  const [generateResult, setGenerateResult] = useState<any | null>(null);
-  const generate = async (
-    dataFile: File,
-    templateId: string,
-    isAsync: boolean,
-    format: "pdf" | "html" | "png" | "jpeg"
-  ) => {
-    /* ... your generate logic ... */
-  };
 
   const value = {
     file,
     onUpload,
+    uploadError,
     templates,
     templatesLoading,
     templatesError,
     selectedTemplate,
     setSelectedTemplate,
     templateContents,
-    previewsLoading, // Expose new state
+    previewsLoading,
     generate,
     generateLoading,
     generateError,

@@ -1,14 +1,14 @@
-import * as React from "react";
+// src/hooks/use-template.ts
+
+import { useState, useEffect, useMemo } from "react";
 import { useApi, type Template } from "./use-api";
 
-export function useTemplate(
-  defaultTemplate: string = "achievement_template.html"
-) {
-  const [selected, setSelected] = React.useState<string>(defaultTemplate);
-  const [templates, setTemplates] = React.useState<Template[]>([]);
+export function useTemplate(defaultTemplateName: string = "") {
+  const [selected, setSelected] = useState<string | null>(defaultTemplateName);
+  const [allTemplates, setAllTemplates] = useState<Template[]>([]);
   const { listTemplates, loading, error } = useApi();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchTemplates = async () => {
       try {
         const response = await listTemplates();
@@ -26,22 +26,20 @@ export function useTemplate(
             type: "pptx" as const,
           })),
         ];
-        setTemplates(templateList);
+        setAllTemplates(templateList);
 
-        // Set default template if available
-        if (
-          templateList.length > 0 &&
-          !templateList.find((t) => t.name === selected)
-        ) {
+        // Set a default selection if one isn't already set
+        if (!selected && templateList.length > 0) {
           setSelected(templateList[0].name);
         }
       } catch (err) {
         console.error("Failed to fetch templates:", err);
       }
     };
-
     fetchTemplates();
-  }, []);
+  }, [listTemplates]); // Removed 'selected' to prevent re-fetching on select
+
+  const templates = useMemo(() => allTemplates, [allTemplates]);
 
   return {
     selected,

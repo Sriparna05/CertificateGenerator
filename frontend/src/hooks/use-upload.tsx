@@ -1,13 +1,20 @@
-import * as React from "react";
+// src/hooks/use-upload.ts
 
-export function useUpload() {
-  const [file, setFile] = React.useState<File | null>(null);
-  const [error, setError] = React.useState<string | null>(null);
+import { useState, useCallback } from "react";
 
-  const onUpload = (f: File | null) => {
-    setFile(f);
+export function useUpload(defaultFile: File | null = null) {
+  const [file, setFile] = useState<File | null>(defaultFile);
+  const [error, setError] = useState<string | null>(null);
+
+  const onUpload = useCallback((newFile: File | null) => {
+    if (newFile && !["text/csv"].includes(newFile.type)) {
+      setError("Invalid file type. Please upload a CSV file.");
+      setFile(null);
+      return;
+    }
     setError(null);
-  };
+    setFile(newFile);
+  }, []);
 
   return {
     file,
