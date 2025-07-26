@@ -36,6 +36,11 @@ class ProductionConfig(Config):
 
     DEBUG = False
     TESTING = False
+    SECRET_KEY = os.getenv("SECRET_KEY", "production-secret-key-change-me")
+    
+    # Use environment variables for production
+    CELERY_BROKER_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+    CELERY_RESULT_BACKEND = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 
 
 class TestingConfig(Config):
