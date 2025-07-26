@@ -1,9 +1,11 @@
 services:
   - type: web
     name: certificate-generator
-    env: python
-    buildCommand: "./build.sh"
-    startCommand: "gunicorn --bind 0.0.0.0:$PORT run:app"
+    runtime: python
+    region: oregon
+    plan: free
+    buildCommand: "chmod +x build.sh && ./build.sh"
+    startCommand: "gunicorn --bind 0.0.0.0:$PORT --workers 1 --timeout 120 run:app"
     envVars:
       - key: FLASK_ENV
         value: production
@@ -15,7 +17,12 @@ services:
         fromService:
           type: redis
           name: certificate-redis
+      - key: NODE_VERSION
+        value: "18"
+      - key: PYTHON_VERSION
+        value: "3.11"
 
   - type: redis
     name: certificate-redis
+    plan: free
     ipAllowList: []
