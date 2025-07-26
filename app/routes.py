@@ -108,8 +108,10 @@ def register_routes(app):
         """Download a single generated certificate file."""
         logging.debug(f"Download request for filename: {filename}")
         try:
-            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            file_path = os.path.join(project_root, "generated_certificates", filename)
+            # The generated certificates are stored in app/generated_certificates
+            # Since this file is in app/routes.py, we need to go up one level to app directory
+            app_dir = os.path.dirname(os.path.abspath(__file__))
+            file_path = os.path.join(app_dir, "generated_certificates", filename)
             
             logging.debug(f"Attempting to serve file from absolute path: {file_path}")
 
@@ -140,7 +142,8 @@ def register_routes(app):
                 logging.warning("No file paths provided in the request.")
                 return jsonify({"error": "No file paths provided"}), 400
 
-            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            # Get the app directory (where this routes.py file is located)
+            app_dir = os.path.dirname(os.path.abspath(__file__))
             temp_zip_file = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
             
             files_added_count = 0
@@ -149,7 +152,13 @@ def register_routes(app):
                     if not isinstance(relative_path, str):
                         continue
                     
-                    absolute_path = os.path.join(project_root, relative_path)
+                    # If the path starts with 'app/', use it as is from project root
+                    # Otherwise assume it's relative to app directory
+                    if relative_path.startswith('app/'):
+                        project_root = os.path.dirname(app_dir)
+                        absolute_path = os.path.join(project_root, relative_path)
+                    else:
+                        absolute_path = os.path.join(app_dir, relative_path)
                     
                     if os.path.exists(absolute_path):
                         archive_name = os.path.basename(relative_path)
