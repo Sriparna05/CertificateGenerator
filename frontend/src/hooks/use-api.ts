@@ -1,6 +1,8 @@
 import { useState, useCallback } from "react";
 
-const API_BASE_URL = "http://127.0.0.1:5000/api/v1";
+const API_BASE_URL = import.meta.env.PROD 
+  ? "/api/v1"  // Production: use relative URLs (same domain)
+  : "http://127.0.0.1:5000/api/v1";  // Development: use localhost
 
 export interface Template {
   name: string;

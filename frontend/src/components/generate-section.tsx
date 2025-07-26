@@ -65,7 +65,9 @@ export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
       return;
     }
     // The file_path from the backend is relative, e.g., "generated_certificates/cert.pdf"
-    const downloadUrl = `http://127.0.0.1:5000/${cert.file_path}`;
+    const downloadUrl = import.meta.env.PROD 
+      ? `/${cert.file_path}`  // Production: relative URL
+      : `http://127.0.0.1:5000/${cert.file_path}`;  // Development: localhost
 
     const link = document.createElement("a");
     link.href = downloadUrl;
@@ -92,7 +94,9 @@ export const GenerateSection = ({ onBack }: GenerateSectionProps) => {
     // For now, we assume it exists as per your older code.
     try {
       const response = await fetch(
-        "http://127.0.0.1:5000/api/v1/certificates/download_zip",
+        import.meta.env.PROD 
+          ? "/api/v1/certificates/download_zip"
+          : "http://127.0.0.1:5000/api/v1/certificates/download_zip",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

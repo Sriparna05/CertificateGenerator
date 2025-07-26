@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: certificate-generator
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn --bind 0.0.0.0:$PORT run:app"
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: GOOGLE_GEMINI_API_KEY
+        sync: false  # You'll need to set this manually in Render dashboard
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: certificate-redis
+    
+  - type: redis
+    name: certificate-redis
+    ipAllowList: []
