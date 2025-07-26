@@ -16,7 +16,7 @@ cd frontend
 
 # Install Node dependencies
 echo "📦 Installing Node dependencies..."
-npm ci --only=production
+npm ci
 
 # Build frontend (ignore TypeScript errors)
 echo "🔨 Building React app..."
